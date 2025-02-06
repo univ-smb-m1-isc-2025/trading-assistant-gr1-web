@@ -1,6 +1,6 @@
-import {useState} from "react";
+import React, {useState} from "react";
 
-export default function LoginPage() {
+export default function LoginForm() {
   // state
   const [inputEmail, setInputEmail] = useState('');
 
@@ -16,10 +16,10 @@ export default function LoginPage() {
   }
 
   // render
-  return <div>
-    <h1>Connexion</h1>
+  return (
 
     <form action="submit" onSubmit={handleSubmit}>
+      <h1>Connexion</h1>
 
       <input
         value={inputEmail}
@@ -36,6 +36,5 @@ export default function LoginPage() {
 
       <button type="submit">Login</button>
     </form>
-
-  </div>
+  )
 }
