@@ -11,7 +11,7 @@ function App() {
   return (
     <Routes>
       <Route path="/" element={<LoginPage />} />
-      <Route path="/home" element={<HomePage />} />
+      <Route path="/home/:username" element={<HomePage />} />
       <Route path="*" element={<ErrorPage />} />
     </Routes>
   );

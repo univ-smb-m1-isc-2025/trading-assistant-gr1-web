@@ -1,15 +1,16 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 export default function LoginForm() {
   // state
   const [inputEmail, setInputEmail] = useState("");
+  const navigate = useNavigate();
 
   // comportement
   const handleSubmit = (evt) => {
     evt.preventDefault();
-    alert(`Bonjour ${inputEmail}`);
     setInputEmail("");
+    navigate(`/home/${inputEmail}`);
   };
 
   const handleChange = (evt) => {
@@ -31,7 +32,6 @@ export default function LoginForm() {
       <input type="password" placeholder="Password" required />
 
       <button type="submit">Login</button>
-      <Link to="/home">Vers HomePage</Link>
     </form>
   );
 }
