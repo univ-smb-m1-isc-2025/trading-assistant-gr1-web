@@ -1,14 +1,13 @@
-# Base Image 
-FROM nginx:alpine
+FROM node:18-alpine
 
-# MAINTAINER of the Dockerfile
-MAINTAINER Mathis Feltrin <mathisfeltrin@gmail.com>`
+WORKDIR /app
 
-#Copy *
+COPY package*.json ./
+
+RUN npm install
+
 COPY . .
 
-#Expose Nginx Port
-EXPOSE 80
+EXPOSE 5173
 
-#Start NginxService 
-CMD ["nginx", "-g", "daemon off;"]
+CMD ["npm", "run", "dev"]
