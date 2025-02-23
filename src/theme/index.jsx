@@ -1,5 +1,5 @@
 const colors = {
-  primary: "#007BFF", // Bleu principal
+  primary: "#2087F1", // Bleu principal
   secondary: "#6C757D", // Gris secondaire
   success: "#28A745", // Vert succès
   danger: "#DC3545", // Rouge danger
