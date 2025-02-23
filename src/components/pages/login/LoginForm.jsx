@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import { BsPersonCircle } from "react-icons/bs";
+import { RiLockPasswordFill } from "react-icons/ri";
 import { Link, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 
@@ -28,13 +30,21 @@ export default function LoginForm() {
       </div>
 
       <div>
-        <input
-          value={inputEmail}
-          onChange={handleChange}
-          type="text"
-          placeholder="Email"
-        />
-        <input type="password" placeholder="Password" required />
+        <div className="input-with-icon">
+          <BsPersonCircle className="icon" />
+          <input
+            value={inputEmail}
+            onChange={handleChange}
+            type="text"
+            placeholder="Email"
+          />
+        </div>
+
+        <div className="input-with-icon">
+          <RiLockPasswordFill className="icon" />
+          <input type="password" placeholder="Password" required />
+        </div>
+
         <button type="submit">Login</button>
       </div>
     </LoginFormStyled>
@@ -65,5 +75,32 @@ const LoginFormStyled = styled.form`
     margin: 20px 10px 10px;
     color: white;
     font-size: 36px;
+  }
+
+  .input-with-icon {
+    /* border: 1px solid red; */
+    background-color: white;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    padding: 18px 24px;
+    margin: 18px 0;
+
+    .icon {
+      font-size: 15px;
+      margin-right: 8px;
+      color: #93a2b1;
+    }
+
+    input {
+      border: none;
+      font-size: 15px;
+      color: #17161a;
+    }
+
+    &::placeholder {
+      background: white;
+      color: lightgrey;
+    }
   }
 `;
