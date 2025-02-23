@@ -21,22 +21,49 @@ export default function LoginForm() {
   // render
   return (
     <LoginFormStyled action="submit" onSubmit={handleSubmit}>
-      <h1>Connexion</h1>
+      <div>
+        <h1>Bienvenue !</h1>
+        <hr />
+        <h2>Connexion</h2>
+      </div>
 
-      <input
-        value={inputEmail}
-        onChange={handleChange}
-        type="text"
-        placeholder="Email"
-      />
-
-      <input type="password" placeholder="Password" required />
-
-      <button type="submit">Login</button>
+      <div>
+        <input
+          value={inputEmail}
+          onChange={handleChange}
+          type="text"
+          placeholder="Email"
+        />
+        <input type="password" placeholder="Password" required />
+        <button type="submit">Login</button>
+      </div>
     </LoginFormStyled>
   );
 }
 
 const LoginFormStyled = styled.form`
   background: green;
+  text-align: center;
+  max-width: 500px;
+  min-width: 400px;
+  margin: 0 auto;
+  padding: 2.5rem 2rem;
+  border-radius: 5px;
+  font-family: "Poppins", sans-serif;
+
+  hr {
+    border: 1.5px solid #2087f1;
+    margin: 40px 0;
+  }
+
+  h1 {
+    color: white;
+    font-size: 48px;
+  }
+
+  h2 {
+    margin: 20px 10px 10px;
+    color: white;
+    font-size: 36px;
+  }
 `;
