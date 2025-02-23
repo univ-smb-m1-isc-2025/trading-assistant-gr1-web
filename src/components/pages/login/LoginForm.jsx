@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { BsPersonCircle } from "react-icons/bs";
+import { IoChevronForward } from "react-icons/io5";
 import { RiLockPasswordFill } from "react-icons/ri";
 import { Link, useNavigate } from "react-router-dom";
 import styled from "styled-components";
@@ -45,14 +46,17 @@ export default function LoginForm() {
           <input type="password" placeholder="Password" required />
         </div>
 
-        <button type="submit">Login</button>
+        <button className="button-with-icon">
+          <span type="submit">Login</span>
+          <IoChevronForward className="icon" />
+        </button>
       </div>
     </LoginFormStyled>
   );
 }
 
 const LoginFormStyled = styled.form`
-  background: green;
+  /* background: green; */
   text-align: center;
   max-width: 500px;
   min-width: 400px;
@@ -96,11 +100,72 @@ const LoginFormStyled = styled.form`
       border: none;
       font-size: 15px;
       color: #17161a;
+      width: 100%;
     }
 
     &::placeholder {
       background: white;
       color: lightgrey;
+    }
+  }
+
+  .button-with-icon {
+    width: 100%;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    position: relative; //is used in case you want to create interactive icons where an icon replaces the text label.
+    white-space: nowrap; //prevents the text label from wrapping to the next line.
+    text-decoration: none; //removes the text decoration in case you’re applying the .btn class to a link.
+    line-height: 1;
+
+    padding: 18px 24px;
+    border-radius: 5px;
+    font-size: 15px;
+    font-weight: 800;
+    color: white;
+    background-color: #2087f1;
+    border: 1px solid #2087f1;
+
+    &:hover:not(:disabled) {
+      background-color: white;
+      color: #2087f1;
+      border: 1px solid #2087f1;
+      transition: all 200ms ease-out;
+    }
+
+    &:active {
+      color: white;
+      background-color: #2087f1;
+      border: 1px solid #2087f1;
+    }
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    &.with-focus {
+      border: 1px solid white;
+      background-color: white;
+      color: #2087f1;
+      :hover {
+        color: white;
+        background-color: #2087f1;
+        border: 1px solid white;
+      }
+      :active {
+        background-color: white;
+        color: #2087f1;
+      }
+    }
+
+    .icon {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 15px;
+      margin-left: 10px;
     }
   }
 `;
