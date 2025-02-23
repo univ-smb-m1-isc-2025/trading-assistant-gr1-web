@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import styled from "styled-components";
 
 export default function LoginForm() {
   // state
@@ -19,7 +20,7 @@ export default function LoginForm() {
 
   // render
   return (
-    <form action="submit" onSubmit={handleSubmit}>
+    <LoginFormStyled action="submit" onSubmit={handleSubmit}>
       <h1>Connexion</h1>
 
       <input
@@ -32,6 +33,10 @@ export default function LoginForm() {
       <input type="password" placeholder="Password" required />
 
       <button type="submit">Login</button>
-    </form>
+    </LoginFormStyled>
   );
 }
+
+const LoginFormStyled = styled.form`
+  background: green;
+`;
