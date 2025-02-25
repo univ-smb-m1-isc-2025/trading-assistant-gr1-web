@@ -13,13 +13,13 @@ export default function Logo() {
 const LogoStyled = styled.div`
   display: flex;
   align-items: center;
-  /* transform: scale(2.5); */
+  transform: scale(2.5);
 
   h1 {
     display: inline;
     text-align: center;
     color: #2087f1;
-    font-size: 72px;
+    font-size: 36px;
     line-height: 1em;
     font-weight: 700;
     text-transform: uppercase;
@@ -30,8 +30,8 @@ const LogoStyled = styled.div`
   img {
     object-fit: contain;
     object-position: center;
-    height: 160px;
-    width: 160px;
+    height: 80px;
+    width: 80px;
     margin: 0 5px;
   }
 `;
