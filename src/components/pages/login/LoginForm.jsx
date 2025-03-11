@@ -4,22 +4,24 @@ import { IoChevronForward } from "react-icons/io5";
 import { RiLockPasswordFill } from "react-icons/ri";
 import { Link, useNavigate } from "react-router-dom";
 import styled from "styled-components";
+import { GoogleLogin } from "@react-oauth/google";
+import { jwtDecode } from "jwt-decode";
 
 export default function LoginForm() {
   // state
-  const [inputEmail, setInputEmail] = useState("");
+  // const [inputEmail, setInputEmail] = useState("");
   const navigate = useNavigate();
 
   // comportement
   const handleSubmit = (evt) => {
     evt.preventDefault();
-    setInputEmail("");
-    navigate(`/home/${inputEmail}`);
+    // setInputEmail("");
+    navigate(`/home`);
   };
 
-  const handleChange = (evt) => {
-    setInputEmail(evt.target.value);
-  };
+  // const handleChange = (evt) => {
+  //   setInputEmail(evt.target.value);
+  // };
 
   // render
   return (
@@ -34,8 +36,8 @@ export default function LoginForm() {
         <div className="input-with-icon">
           <BsPersonCircle className="icon" />
           <input
-            value={inputEmail}
-            onChange={handleChange}
+            // value={inputEmail}
+            // onChange={handleChange}
             type="text"
             placeholder="Email"
           />
@@ -45,6 +47,17 @@ export default function LoginForm() {
           <RiLockPasswordFill className="icon" />
           <input type="password" placeholder="Password" required />
         </div>
+
+        <GoogleLogin
+          onSuccess={(credentialResponse) => {
+            console.log(credentialResponse);
+            console.log(jwtDecode(credentialResponse.credential));
+            navigate(`/home`);
+          }}
+          onError={() => console.log("login failed")}
+          auto_select={true}
+          type="icon"
+        />
 
         <button className="button-with-icon">
           <span type="submit">Login</span>
