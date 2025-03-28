@@ -4,14 +4,52 @@ import { BsPersonCircle } from "react-icons/bs";
 import { RiLockPasswordFill } from "react-icons/ri";
 import { IoChevronForward } from "react-icons/io5";
 import { AiOutlineMail, AiOutlinePhone } from "react-icons/ai";
+import { useState } from "react";
 
 export default function SignUpForm() {
   const navigate = useNavigate();
 
-  const handleSubmit = (evt) => {
+  // State pour les champs du formulaire
+  const [formData, setFormData] = useState({
+    firstname: "",
+    lastname: "",
+    email: "",
+    password: "",
+    phone: "",
+  });
+
+  // Gestion des changements dans les champs
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+  };
+
+  // Gestion de la soumission du formulaire
+  const handleSubmit = async (evt) => {
     evt.preventDefault();
-    // Logique pour créer un compte
-    navigate(`/home`);
+
+    try {
+      const response = await fetch("http://localhost:8080/api/users", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (response.ok) {
+        // Si la requête réussit, redirigez l'utilisateur vers la page d'accueil
+        navigate(`/home`);
+      } else {
+        // Gérez les erreurs (par exemple, afficher un message d'erreur)
+        const errorData = await response.json();
+        console.error("Erreur lors de l'inscription :", errorData);
+        alert("Erreur lors de l'inscription : " + errorData.message);
+      }
+    } catch (error) {
+      console.error("Erreur réseau :", error);
+      alert("Erreur réseau : Veuillez réessayer plus tard.");
+    }
   };
 
   return (
@@ -22,34 +60,69 @@ export default function SignUpForm() {
       </div>
 
       <div>
-        {/* Champ Nom */}
-        <div className="input-with-icon">
-          <BsPersonCircle className="icon" />
-          <input type="text" placeholder="Nom" required />
-        </div>
-
         {/* Champ Prénom */}
         <div className="input-with-icon">
           <BsPersonCircle className="icon" />
-          <input type="text" placeholder="Prénom" required />
+          <input
+            type="text"
+            name="firstname"
+            placeholder="Prénom"
+            value={formData.firstname}
+            onChange={handleChange}
+            required
+          />
+        </div>
+
+        {/* Champ Nom */}
+        <div className="input-with-icon">
+          <BsPersonCircle className="icon" />
+          <input
+            type="text"
+            name="lastname"
+            placeholder="Nom"
+            value={formData.lastname}
+            onChange={handleChange}
+            required
+          />
         </div>
 
         {/* Champ Email */}
         <div className="input-with-icon">
           <AiOutlineMail className="icon" />
-          <input type="email" placeholder="Email" required />
+          <input
+            type="email"
+            name="email"
+            placeholder="Email"
+            value={formData.email}
+            onChange={handleChange}
+            required
+          />
         </div>
 
         {/* Champ Téléphone */}
         <div className="input-with-icon">
           <AiOutlinePhone className="icon" />
-          <input type="tel" placeholder="Téléphone" required />
+          <input
+            type="tel"
+            name="phone"
+            placeholder="Téléphone"
+            value={formData.phone}
+            onChange={handleChange}
+            required
+          />
         </div>
 
         {/* Champ Mot de passe */}
         <div className="input-with-icon">
           <RiLockPasswordFill className="icon" />
-          <input type="password" placeholder="Mot de passe" required />
+          <input
+            type="password"
+            name="password"
+            placeholder="Mot de passe"
+            value={formData.password}
+            onChange={handleChange}
+            required
+          />
         </div>
 
         <button className="button-with-icon">
