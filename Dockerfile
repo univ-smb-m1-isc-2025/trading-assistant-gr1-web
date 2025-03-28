@@ -1,13 +1,8 @@
-FROM node:18-alpine
+# Production environment
+FROM nginx:alpine AS production
 
-WORKDIR /app
+COPY nginx.conf /etc/nginx/nginx.conf
+COPY dist /usr/share/nginx/html
 
-COPY package*.json ./
-
-RUN npm install
-
-COPY . .
-
-EXPOSE 5173
-
-CMD ["npm", "run", "dev", "--", "--host"]
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]
