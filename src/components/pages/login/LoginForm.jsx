@@ -63,6 +63,10 @@ export default function LoginForm() {
           <span type="submit">Login</span>
           <IoChevronForward className="icon" />
         </button>
+
+        <p>
+          Pas encore de compte ? <Link to="/signup">Créer un compte</Link>
+        </p>
       </div>
     </LoginFormStyled>
   );
