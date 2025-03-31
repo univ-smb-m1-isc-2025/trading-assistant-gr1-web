@@ -99,6 +99,7 @@ export default function SignUpForm() {
 const SignUpFormStyled = styled.form`
   text-align: center;
   font-family: "Poppins", sans-serif;
+  padding-bottom: 100px;
 
   .signup-form {
     text-align: center;
