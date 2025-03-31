@@ -10,9 +10,8 @@ export default function Input({ type, placeholder, Icon, ...otherProps }) {
 }
 
 const InputStyled = styled.div`
-  /* border: 1px solid red; */
-  background-color: white;
-  border-radius: 5px;
+  border: solid 1px #2b3139;
+  border-radius: 10px;
   display: flex;
   align-items: center;
   padding: 18px 24px;
@@ -27,12 +26,13 @@ const InputStyled = styled.div`
   input {
     border: none;
     font-size: 15px;
-    color: #17161a;
+    color: #e9ecef;
     width: 100%;
+    background-color: transparent;
   }
 
   &::placeholder {
-    background: white;
+    background: #93a2b1;
     color: lightgrey;
   }
 `;
