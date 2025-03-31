@@ -8,9 +8,5 @@ docker pull ghcr.io/univ-smb-m1-isc-2025/trading-assistant-gr1-web:main
 ```
 
 ```shell
-docker build -t trademate-web .
-```
-
-```shell
-docker run -p 80:80 --name trademate-web trademate-web
+docker run -p 80:80 --name trademate-web ghcr.io/univ-smb-m1-isc-2025/trading-assistant-gr1-web:main
 ```
