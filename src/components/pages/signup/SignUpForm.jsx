@@ -12,9 +12,52 @@ import { AiOutlineMail, AiOutlinePhone } from "react-icons/ai";
 export default function SignUpForm() {
   const navigate = useNavigate();
 
-  const handleSubmit = (evt) => {
+  // State pour les champs du formulaire
+  const [formData, setFormData] = useState({
+    firstname: "",
+    lastname: "",
+    email: "",
+    phone: "",
+    password: "",
+  });
+
+  // State pour gérer les erreurs ou les messages de succès
+  const [error, setError] = useState(null);
+  const [success, setSuccess] = useState(null);
+
+  // Gestion des changements dans les champs
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+  };
+
+  // Gestion de la soumission du formulaire
+  const handleSubmit = async (evt) => {
     evt.preventDefault();
-    navigate(`/home`);
+    setError(null);
+    setSuccess(null);
+
+    try {
+      const response = await fetch("http://localhost:8080/api/users/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (response.ok) {
+        setSuccess("Compte créé avec succès !");
+        navigate(`/home`); // Redirection vers la page d'accueil
+      } else {
+        const errorData = await response.json();
+        setError(errorData.message || "Une erreur est survenue.");
+      }
+    } catch (err) {
+      console.log(formData);
+
+      setError("Erreur réseau : Veuillez réessayer plus tard.");
+    }
   };
 
   return (
@@ -27,35 +70,50 @@ export default function SignUpForm() {
 
         <Input
           type={"text"}
+          name="firstname"
           placeholder={"Prénom"}
+          value={formData.firstname}
+          onChange={handleChange}
           required
           Icon={<BsPersonCircle className="icon" />}
         />
 
         <Input
           type={"text"}
+          name="lastname"
           placeholder={"Nom"}
+          value={formData.lastname}
+          onChange={handleChange}
           required
           Icon={<BsPersonCircle className="icon" />}
         />
 
         <Input
           type={"email"}
+          name="email"
           placeholder={"Email"}
+          value={formData.email}
+          onChange={handleChange}
           required
           Icon={<AiOutlineMail className="icon" />}
         />
 
         <Input
           type={"tel"}
+          name="phone"
           placeholder={"Téléphone"}
+          value={formData.phone}
+          onChange={handleChange}
           required
           Icon={<AiOutlinePhone className="icon" />}
         />
 
         <Input
           type={"password"}
+          name="password"
           placeholder={"Mot de passe"}
+          value={formData.password}
+          onChange={handleChange}
           required
           Icon={<RiLockPasswordFill className="icon" />}
         />
@@ -64,6 +122,10 @@ export default function SignUpForm() {
           <span type="submit">S'inscrire</span>
           <IoChevronForward className="icon" />
         </button>
+
+        {/* Affichage des messages d'erreur ou de succès */}
+        {error && <p className="error">{error}</p>}
+        {success && <p className="success">{success}</p>}
 
         <div className="or">
           <hr />
@@ -212,6 +274,16 @@ const SignUpFormStyled = styled.form`
         font-size: 15px;
         margin-left: 10px;
       }
+    }
+
+    .error {
+      color: red;
+      margin-top: 10px;
+    }
+
+    .success {
+      color: green;
+      margin-top: 10px;
     }
   }
 
