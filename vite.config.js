@@ -7,5 +7,12 @@ export default defineConfig({
   server: {
     // allowedHosts: true,
     allowedHosts: ["localhost", "www.trademate.oups.net"],
+    proxy: {
+      "/api": {
+        target: "https://query1.finance.yahoo.com",
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api/, ""),
+      },
+    },
   },
 });
