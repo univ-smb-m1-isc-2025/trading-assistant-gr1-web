@@ -3,9 +3,8 @@ import styled from "styled-components";
 export default function Logo() {
   return (
     <LogoStyled>
-      <h1>Trade</h1>
-      <img src="/images/trademate-logo.png" alt="logo-trade-mate" />
-      <h1>Mate</h1>
+      <h3>Trademate</h3>
+      <img src="/images/logo.png" alt="logo-trade-mate" className="logo" />
     </LogoStyled>
   );
 }
@@ -13,25 +12,17 @@ export default function Logo() {
 const LogoStyled = styled.div`
   display: flex;
   align-items: center;
-  transform: scale(2.5);
+  justify-content: space-between;
+  width: 100%;
+  gap: 10px; /* Espace entre l'image et le texte */
 
-  h1 {
-    display: inline;
-    text-align: center;
-    color: #2087f1;
-    font-size: 36px;
-    line-height: 1em;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 1.5px;
-    font-family: "Poppins", sans-serif;
+  .logo {
+    width: 60px; /* Ajustez la taille de l'image */
+    height: 60px;
   }
 
-  img {
-    object-fit: contain;
-    object-position: center;
-    height: 80px;
-    width: 80px;
-    margin: 0 5px;
+  h3 {
+    color: #2087f1;
+    font-size: 28px;
   }
 `;

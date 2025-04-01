@@ -8,6 +8,7 @@ import { jwtDecode } from "jwt-decode";
 import Input from "../../reusable-ui/Input";
 import { BsPersonCircle } from "react-icons/bs";
 import { AiOutlineMail, AiOutlinePhone } from "react-icons/ai";
+import Logo from "../../reusable-ui/Logo";
 
 export default function SignUpForm() {
   const navigate = useNavigate();
@@ -64,7 +65,8 @@ export default function SignUpForm() {
     <SignUpFormStyled action="submit" onSubmit={handleSubmit}>
       <div className="signup-form">
         <div className="header">
-          <h3>Trademate</h3>
+          <Logo />
+          {/* <h3>Trademate</h3> */}
           <h2>Créer un compte</h2>
         </div>
 
@@ -203,7 +205,7 @@ const SignUpFormStyled = styled.form`
     }
 
     h2 {
-      margin: 20px 10px 10px 0;
+      margin: 10px 10px 10px 0;
       color: #e9ecef;
       font-size: 36px;
     }
