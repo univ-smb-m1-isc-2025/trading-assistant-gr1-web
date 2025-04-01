@@ -7,6 +7,7 @@ import { GoogleLogin } from "@react-oauth/google";
 import { jwtDecode } from "jwt-decode";
 import Input from "../../reusable-ui/Input";
 import { BsPersonCircle } from "react-icons/bs";
+import Logo from "../../reusable-ui/Logo";
 
 export default function LoginForm() {
   // state
@@ -29,7 +30,8 @@ export default function LoginForm() {
     <LoginFormStyled action="submit" onSubmit={handleSubmit}>
       <div className="login-form">
         <div className="header">
-          <h3>Trademate</h3>
+          <Logo />
+          {/* <h3>Trademate</h3> */}
           <h2>Connexion</h2>
         </div>
         <Input
@@ -105,7 +107,6 @@ const LoginFormStyled = styled.form`
       h3 {
         color: #2087f1;
         font-size: 28px;
-        /* margin: 0 0 10px 0; */
       }
     }
 
@@ -129,7 +130,7 @@ const LoginFormStyled = styled.form`
     }
 
     h2 {
-      margin: 20px 10px 10px 0;
+      margin: 10px 10px 10px 0;
       color: #e9ecef;
       font-size: 36px;
     }
