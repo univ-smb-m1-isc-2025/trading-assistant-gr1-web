@@ -95,8 +95,6 @@ export default function HomePage() {
   const [suggestions, setSuggestions] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [isWatching, setIsWatching] = useState(false);
-  const [hasAlert, setHasAlert] = useState(false);
 
   // Fonction pour obtenir les suggestions
   const fetchSuggestions = async (query) => {
@@ -118,13 +116,13 @@ export default function HomePage() {
     }
   };
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      fetchSuggestions(symbol);
-    }, 300);
+  // useEffect(() => {
+  //   const timer = setTimeout(() => {
+  //     fetchSuggestions(symbol);
+  //   }, 300);
 
-    return () => clearTimeout(timer);
-  }, [symbol]);
+  //   return () => clearTimeout(timer);
+  // }, [symbol]);
 
   const handleSearch = async (e) => {
     e.preventDefault();
@@ -157,16 +155,6 @@ export default function HomePage() {
     handleSearch({ preventDefault: () => {} });
   };
 
-  const handleWatchToggle = () => {
-    setIsWatching(!isWatching);
-    // TODO: Implémenter la logique de surveillance
-  };
-
-  const handleAlertToggle = () => {
-    setHasAlert(!hasAlert);
-    // TODO: Implémenter la logique d'alerte
-  };
-
   const chartData = result
     ? {
         labels: result.timestamp.map((ts) =>
@@ -187,6 +175,9 @@ export default function HomePage() {
             pointHoverBorderColor: "#fff",
             pointHoverBorderWidth: 2,
             pointHoverRadius: 6,
+            pointStyle: "circle",
+            pointBackgroundColor: "#2962ff",
+            pointBorderColor: "#2962ff",
           },
         ],
       }
@@ -213,10 +204,6 @@ export default function HomePage() {
           </Link>
         </div>
       </Navbar>
-
-      <div className="header">
-        <h1>Bienvenue, {username}</h1>
-      </div>
 
       <div className="search-section">
         <form onSubmit={handleSearch} className="search-form">
@@ -311,19 +298,13 @@ export default function HomePage() {
             <div className="chart-header">
               <h2>{result.meta.longName || result.meta.symbol}</h2>
               <div className="chart-actions">
-                <button
-                  className={`action-button ${isWatching ? "active" : ""}`}
-                  onClick={handleWatchToggle}
-                >
+                <button className="action-button">
                   <BsStar />
-                  <span>{isWatching ? "Surveillé" : "Surveiller"}</span>
+                  <span>Surveiller</span>
                 </button>
-                <button
-                  className={`action-button ${hasAlert ? "active" : ""}`}
-                  onClick={handleAlertToggle}
-                >
+                <button className="action-button">
                   <BsBell />
-                  <span>{hasAlert ? "Alerte active" : "Créer une alerte"}</span>
+                  <span>Créer une alerte</span>
                 </button>
               </div>
             </div>
@@ -676,19 +657,6 @@ const HomePageStyled = styled.div`
           &:hover {
             background-color: #2a2e39;
             border-color: #2962ff;
-          }
-
-          &.active {
-            background-color: #2962ff;
-            border-color: #2962ff;
-
-            &:hover {
-              background-color: #1e4bd8;
-            }
-          }
-
-          svg {
-            font-size: 14px;
           }
         }
       }
