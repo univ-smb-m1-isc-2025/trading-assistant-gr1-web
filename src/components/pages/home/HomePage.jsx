@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import styled from "styled-components";
 import { Line } from "react-chartjs-2";
+import { BsPersonCircle } from "react-icons/bs"; // Import de l'icône
 import {
   Chart as ChartJS,
   LineElement,
@@ -11,6 +12,7 @@ import {
   Tooltip,
   Legend,
 } from "chart.js";
+import Logo from "../../reusable-ui/Logo";
 
 // Enregistrer les composants nécessaires pour Chart.js
 ChartJS.register(
@@ -39,7 +41,7 @@ export default function HomePage() {
 
     try {
       const response = await fetch(
-        `/api/v8/finance/chart/${symbol}?interval=1d&range=${range}`
+        `http://localhost:8080/api/finance/chart/${symbol}?range=${range}`
       );
 
       if (response.ok) {
@@ -73,88 +75,160 @@ export default function HomePage() {
 
   return (
     <HomePageStyled>
+      {/* Navbar */}
+      <Navbar>
+        <div className="logo">
+          <Link to="/home">
+            <img src="/images/logo.png" alt="Logo" />
+          </Link>
+        </div>
+        <div className="nav-links">
+          <Link to="/home">Accueil</Link>
+          <Link to="/markets">Marchés</Link>
+          <Link to="/portfolio">Portefeuille</Link>
+          <Link to="/about">À propos</Link>
+        </div>
+        <div className="account">
+          <Link to="/profile">
+            <BsPersonCircle className="icon" />
+            <span>Profil</span>
+          </Link>
+        </div>
+      </Navbar>
+
       <div className="header">
-        <h1>Bonjour {username}</h1>
+        <h1>Bienvenue, {username}</h1>
       </div>
 
-      <div className="search-container">
-        <h2>Rechercher un symbole boursier</h2>
-        <form onSubmit={handleSearch}>
-          <input
-            type="text"
-            placeholder="Entrez un symbole (ex: AAPL)"
-            value={symbol}
-            onChange={(e) => setSymbol(e.target.value)}
-            required
-          />
-          <select value={range} onChange={(e) => setRange(e.target.value)}>
-            <option value="1d">1 jour</option>
-            <option value="5d">5 jours</option>
-            <option value="1mo">1 mois</option>
-            <option value="3mo">3 mois</option>
-            <option value="6mo">6 mois</option>
-            <option value="1y">1 an</option>
-            <option value="2y">2 ans</option>
-            <option value="5y">5 ans</option>
-            <option value="10y">10 ans</option>
-            <option value="ytd">Depuis le début de l'année</option>
-            <option value="max">Maximum</option>
-          </select>
-          <button type="submit">Rechercher</button>
-        </form>
+      <div className="content">
+        {/* Colonne gauche : Formulaire */}
+        <div className="left-column">
+          <h2>Rechercher un symbole boursier</h2>
+          <form onSubmit={handleSearch}>
+            <input
+              type="text"
+              placeholder="Entrez un symbole (ex: AAPL)"
+              value={symbol}
+              onChange={(e) => setSymbol(e.target.value)}
+              required
+            />
+            <select value={range} onChange={(e) => setRange(e.target.value)}>
+              <option value="1d">1 jour</option>
+              <option value="5d">5 jours</option>
+              <option value="1mo">1 mois</option>
+              <option value="3mo">3 mois</option>
+              <option value="6mo">6 mois</option>
+              <option value="1y">1 an</option>
+              <option value="2y">2 ans</option>
+              <option value="5y">5 ans</option>
+              <option value="10y">10 ans</option>
+              <option value="ytd">Depuis le début de l'année</option>
+              <option value="max">Maximum</option>
+            </select>
+            <button type="submit">Rechercher</button>
+          </form>
 
-        {error && <p className="error">{error}</p>}
+          {error && <p className="error">{error}</p>}
+        </div>
 
-        {result && (
-          <div className="result">
-            <h3>
-              Résultats pour : {result.meta.longName || result.meta.symbol}
-            </h3>
-            <p>
-              <strong>Symbole :</strong> {result.meta.symbol}
-            </p>
-            <p>
-              <strong>Nom complet :</strong> {result.meta.fullExchangeName}
-            </p>
-            <p>
-              <strong>Type d'instrument :</strong> {result.meta.instrumentType}
-            </p>
-            <p>
-              <strong>Fuseau horaire :</strong> {result.meta.timezone}
-            </p>
-            <p>
-              <strong>Prix actuel :</strong> ${result.meta.regularMarketPrice}
-            </p>
-            <p>
-              <strong>Volume :</strong> {result.meta.regularMarketVolume}
-            </p>
-            <p>
-              <strong>52 semaines - Haut :</strong> $
-              {result.meta.fiftyTwoWeekHigh}
-            </p>
-            <p>
-              <strong>52 semaines - Bas :</strong> $
-              {result.meta.fiftyTwoWeekLow}
-            </p>
-            <p>
-              <strong>Plage valide :</strong>{" "}
-              {result.meta.validRanges.join(", ")}
-            </p>
+        {/* Colonne droite : Résultats et graphique */}
+        <div className="right-column">
+          {result && (
+            <div className="result">
+              <h3>
+                Résultats pour : {result.meta.longName || result.meta.symbol}
+              </h3>
+              <p>
+                <strong>Symbole :</strong> {result.meta.symbol}
+              </p>
+              <p>
+                <strong>Nom complet :</strong> {result.meta.fullExchangeName}
+              </p>
+              <p>
+                <strong>Type d'instrument :</strong>{" "}
+                {result.meta.instrumentType}
+              </p>
+              <p>
+                <strong>Fuseau horaire :</strong> {result.meta.timezone}
+              </p>
+              <p>
+                <strong>Prix actuel :</strong> ${result.meta.regularMarketPrice}
+              </p>
+              <p>
+                <strong>Volume :</strong> {result.meta.regularMarketVolume}
+              </p>
+              <p>
+                <strong>52 semaines - Haut :</strong> $
+                {result.meta.fiftyTwoWeekHigh}
+              </p>
+              <p>
+                <strong>52 semaines - Bas :</strong> $
+                {result.meta.fiftyTwoWeekLow}
+              </p>
 
-            {/* Affichage du graphique */}
-            <div className="chart">
-              <h4>Historique des prix ({range})</h4>
-              <Line data={chartData} />
+              {/* Affichage du graphique */}
+              <div className="chart">
+                <h4>Historique des prix ({range})</h4>
+                <Line data={chartData} />
+              </div>
             </div>
-          </div>
-        )}
+          )}
+        </div>
       </div>
-      <Link to="/login">
-        <button>Déconnexion</button>
-      </Link>
     </HomePageStyled>
   );
 }
+
+const Navbar = styled.nav`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding: 10px 20px;
+  background-color: #2b3139;
+  color: #e9ecef;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+
+  .logo img {
+    height: 40px;
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 20px;
+
+    a {
+      text-decoration: none;
+      color: #e9ecef;
+      font-weight: bold;
+      transition: color 0.3s ease;
+
+      &:hover {
+        color: #2087f1;
+      }
+    }
+  }
+
+  .account {
+    a {
+      display: flex;
+      align-items: center;
+      text-decoration: none;
+      color: #e9ecef;
+      font-weight: bold;
+      transition: color 0.3s ease;
+
+      &:hover {
+        color: #2087f1;
+      }
+
+      .icon {
+        font-size: 24px;
+        margin-right: 8px;
+      }
+    }
+  }
+`;
 
 const HomePageStyled = styled.div`
   height: 100vh;
@@ -174,14 +248,28 @@ const HomePageStyled = styled.div`
     }
   }
 
-  .search-container {
-    margin-top: 40px;
-    text-align: center;
-    max-width: 600px;
-    width: 100%;
+  .content {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    width: 90%;
+    max-width: 1200px;
+    margin-top: 20px;
+    padding-bottom: 100px;
+  }
+
+  .left-column,
+  .right-column {
+    flex: 1;
+    margin: 0 10px;
     padding: 20px;
     background-color: #2b3139;
     border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  }
+
+  .left-column {
+    max-width: 400px;
 
     h2 {
       margin-bottom: 20px;
@@ -223,11 +311,10 @@ const HomePageStyled = styled.div`
       margin-top: 20px;
       color: red;
     }
+  }
 
+  .right-column {
     .result {
-      margin-top: 20px;
-      text-align: left;
-
       h3 {
         color: #2087f1;
       }
@@ -239,22 +326,6 @@ const HomePageStyled = styled.div`
       .chart {
         margin-top: 20px;
       }
-    }
-  }
-  button {
-    margin-top: 10px;
-    padding: 10px 20px;
-    font-size: 16px;
-    font-weight: bold;
-    color: white;
-    background-color: #dc3545;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-
-    &:hover {
-      background-color: #a71d2a;
     }
   }
 `;

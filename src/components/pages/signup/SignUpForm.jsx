@@ -38,8 +38,15 @@ export default function SignUpForm() {
     setError(null);
     setSuccess(null);
 
+    console.log("Requête envoyée :", {
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: formData,
+    });
+
     try {
-      const response = await fetch("http://localhost:8080/api/users/", {
+      const response = await fetch("/auth/api/users", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
