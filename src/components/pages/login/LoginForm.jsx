@@ -42,8 +42,6 @@ export default function LoginForm() {
       });
 
       if (response.ok) {
-        console.log("Connexion réussie !");
-
         setSuccess("Login successful");
         navigate(`/home`);
       } else {
