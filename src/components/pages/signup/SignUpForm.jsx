@@ -46,7 +46,14 @@ export default function SignUpForm() {
     });
 
     try {
-      const response = await fetch("/auth/api/users", {
+      // const response = await fetch("/auth/api/users", {
+      //   method: "POST",
+      //   headers: {
+      //     "Content-Type": "application/json",
+      //   },
+      //   body: JSON.stringify(formData),
+      // });
+      const response = await fetch("http://localhost:8080/api/users", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
