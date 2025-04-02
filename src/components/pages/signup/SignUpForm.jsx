@@ -38,21 +38,7 @@ export default function SignUpForm() {
     setError(null);
     setSuccess(null);
 
-    console.log("Requête envoyée :", {
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: formData,
-    });
-
     try {
-      // const response = await fetch("/auth/api/users", {
-      //   method: "POST",
-      //   headers: {
-      //     "Content-Type": "application/json",
-      //   },
-      //   body: JSON.stringify(formData),
-      // });
       const response = await fetch("http://localhost:8080/api/users", {
         method: "POST",
         headers: {
@@ -63,14 +49,13 @@ export default function SignUpForm() {
 
       if (response.ok) {
         setSuccess("Compte créé avec succès !");
-        navigate(`/home`); // Redirection vers la page d'accueil
+        navigate(`/home`);
       } else {
         const errorData = await response.json();
         setError(errorData.message || "Une erreur est survenue.");
       }
     } catch (err) {
       console.log(formData);
-
       setError("Erreur réseau : Veuillez réessayer plus tard.");
     }
   };
