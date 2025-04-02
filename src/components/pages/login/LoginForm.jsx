@@ -33,13 +33,6 @@ export default function LoginForm() {
     setSuccess(null);
 
     try {
-      // const response = await fetch("/signin/api/users/login", {
-      //   method: "POST",
-      //   headers: {
-      //     "Content-Type": "application/json",
-      //   },
-      //   body: JSON.stringify(formData),
-      // });
       const response = await fetch("http://localhost:8080/api/users/login", {
         method: "POST",
         headers: {
@@ -64,7 +57,6 @@ export default function LoginForm() {
     }
   };
 
-  // render
   return (
     <LoginFormStyled action="submit" onSubmit={handleSubmit}>
       <div className="login-form">
@@ -116,7 +108,6 @@ export default function LoginForm() {
             }}
             onError={() => console.log("login failed")}
             auto_select={true}
-            // type="icon"
             theme="filled_black"
             shape="rectangular"
             text="continue_with"
