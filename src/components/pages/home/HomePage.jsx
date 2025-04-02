@@ -1,8 +1,15 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
 import styled from "styled-components";
 import { Line } from "react-chartjs-2";
-import { BsPersonCircle } from "react-icons/bs"; // Import de l'icône
+import {
+  BsPersonCircle,
+  BsSearch,
+  BsArrowUpRight,
+  BsArrowDownRight,
+  BsBell,
+  BsStar,
+} from "react-icons/bs";
 import {
   Chart as ChartJS,
   LineElement,
@@ -24,20 +31,105 @@ ChartJS.register(
   Legend
 );
 
+// Configuration du graphique
+const chartOptions = {
+  responsive: true,
+  maintainAspectRatio: false,
+  interaction: {
+    mode: "index",
+    intersect: false,
+  },
+  plugins: {
+    legend: {
+      display: false,
+    },
+    tooltip: {
+      backgroundColor: "#1e222d",
+      titleColor: "#2962ff",
+      bodyColor: "#d1d4dc",
+      borderColor: "#2a2e39",
+      borderWidth: 1,
+      padding: 12,
+      displayColors: false,
+      callbacks: {
+        label: function (context) {
+          return `Prix: $${context.parsed.y.toFixed(2)}`;
+        },
+      },
+    },
+  },
+  scales: {
+    x: {
+      grid: {
+        color: "#2a2e39",
+        drawBorder: false,
+      },
+      ticks: {
+        color: "#787b86",
+        font: {
+          size: 11,
+        },
+      },
+    },
+    y: {
+      grid: {
+        color: "#2a2e39",
+        drawBorder: false,
+      },
+      ticks: {
+        color: "#787b86",
+        font: {
+          size: 11,
+        },
+      },
+    },
+  },
+};
+
 export default function HomePage() {
   const { username } = useParams();
-
-  // States pour la recherche, les résultats et la plage
   const [symbol, setSymbol] = useState("");
-  const [range, setRange] = useState("1mo"); // Plage par défaut
+  const [range, setRange] = useState("1mo");
   const [result, setResult] = useState(null);
   const [error, setError] = useState(null);
+  const [suggestions, setSuggestions] = useState([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
-  // Fonction pour gérer la soumission du formulaire
+  // Fonction pour obtenir les suggestions
+  const fetchSuggestions = async (query) => {
+    if (query.length < 2) {
+      setSuggestions([]);
+      return;
+    }
+
+    try {
+      const response = await fetch(
+        `http://localhost:8080/api/finance/search?query=${query}`
+      );
+      if (response.ok) {
+        const data = await response.json();
+        setSuggestions(data.quotes || []);
+      }
+    } catch (err) {
+      console.error("Erreur lors de la recherche des suggestions:", err);
+    }
+  };
+
+  // useEffect(() => {
+  //   const timer = setTimeout(() => {
+  //     fetchSuggestions(symbol);
+  //   }, 300);
+
+  //   return () => clearTimeout(timer);
+  // }, [symbol]);
+
   const handleSearch = async (e) => {
     e.preventDefault();
     setError(null);
     setResult(null);
+    setIsLoading(true);
+    setShowSuggestions(false);
 
     try {
       const response = await fetch(
@@ -46,28 +138,46 @@ export default function HomePage() {
 
       if (response.ok) {
         const data = await response.json();
-        setResult(data.chart.result[0]); // Stocke les résultats dans le state
+        setResult(data.chart.result[0]);
       } else {
         setError("Erreur lors de la récupération des données.");
       }
     } catch (err) {
       setError("Erreur réseau. Veuillez réessayer plus tard.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  // Préparer les données pour le graphique
+  const handleSuggestionClick = (suggestion) => {
+    setSymbol(suggestion.symbol);
+    setShowSuggestions(false);
+    handleSearch({ preventDefault: () => {} });
+  };
+
   const chartData = result
     ? {
         labels: result.timestamp.map((ts) =>
           new Date(ts * 1000).toLocaleDateString("fr-FR")
-        ), // Convertir les timestamps en dates lisibles
+        ),
         datasets: [
           {
             label: `Prix de clôture (${result.meta.currency})`,
-            data: result.indicators.quote[0].close, // Données des prix de clôture
-            borderColor: "#2087f1",
-            backgroundColor: "rgba(32, 135, 241, 0.2)",
-            tension: 0.2, // Lissage de la courbe
+            data: result.indicators.quote[0].close,
+            borderColor: "#2962ff",
+            backgroundColor: "rgba(41, 98, 255, 0.1)",
+            borderWidth: 2,
+            tension: 0.4,
+            fill: true,
+            pointRadius: 0,
+            pointHoverRadius: 4,
+            pointHoverBackgroundColor: "#2962ff",
+            pointHoverBorderColor: "#fff",
+            pointHoverBorderWidth: 2,
+            pointHoverRadius: 6,
+            pointStyle: "circle",
+            pointBackgroundColor: "#2962ff",
+            pointBorderColor: "#2962ff",
           },
         ],
       }
@@ -75,7 +185,6 @@ export default function HomePage() {
 
   return (
     <HomePageStyled>
-      {/* Navbar */}
       <Navbar>
         <div className="logo">
           <Link to="/home">
@@ -96,22 +205,70 @@ export default function HomePage() {
         </div>
       </Navbar>
 
-      <div className="header">
-        <h1>Bienvenue, {username}</h1>
-      </div>
-
-      <div className="content">
-        {/* Colonne gauche : Formulaire */}
-        <div className="left-column">
-          <h2>Rechercher un symbole boursier</h2>
-          <form onSubmit={handleSearch}>
+      <div className="search-section">
+        <form onSubmit={handleSearch} className="search-form">
+          <div className="search-input-container">
+            <BsSearch className="search-icon" />
             <input
               type="text"
-              placeholder="Entrez un symbole (ex: AAPL)"
+              placeholder="Rechercher un symbole boursier..."
               value={symbol}
-              onChange={(e) => setSymbol(e.target.value)}
+              onChange={(e) => {
+                setSymbol(e.target.value);
+                setShowSuggestions(true);
+              }}
+              onFocus={() => setShowSuggestions(true)}
               required
+              className="search-input"
             />
+          </div>
+
+          {showSuggestions && suggestions.length > 0 && (
+            <div className="suggestions-container">
+              {suggestions.map((suggestion) => (
+                <div
+                  key={suggestion.symbol}
+                  className="suggestion-item"
+                  onClick={() => handleSuggestionClick(suggestion)}
+                >
+                  <div className="suggestion-info">
+                    <span className="symbol">{suggestion.symbol}</span>
+                    <span className="name">{suggestion.longname}</span>
+                  </div>
+                  <div className="suggestion-price">
+                    <span
+                      className={`price ${
+                        suggestion.regularMarketChangePercent > 0
+                          ? "positive"
+                          : "negative"
+                      }`}
+                    >
+                      ${suggestion.regularMarketPrice}
+                    </span>
+                    <span
+                      className={`change ${
+                        suggestion.regularMarketChangePercent > 0
+                          ? "positive"
+                          : "negative"
+                      }`}
+                    >
+                      {suggestion.regularMarketChangePercent > 0 ? (
+                        <BsArrowUpRight />
+                      ) : (
+                        <BsArrowDownRight />
+                      )}
+                      {Math.abs(suggestion.regularMarketChangePercent).toFixed(
+                        2
+                      )}
+                      %
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          <div className="range-selector">
             <select value={range} onChange={(e) => setRange(e.target.value)}>
               <option value="1d">1 jour</option>
               <option value="5d">5 jours</option>
@@ -125,56 +282,72 @@ export default function HomePage() {
               <option value="ytd">Depuis le début de l'année</option>
               <option value="max">Maximum</option>
             </select>
-            <button type="submit">Rechercher</button>
-          </form>
+          </div>
+
+          <button type="submit" className="search-button" disabled={isLoading}>
+            {isLoading ? "Recherche..." : "Rechercher"}
+          </button>
 
           {error && <p className="error">{error}</p>}
-        </div>
+        </form>
+      </div>
 
-        {/* Colonne droite : Résultats et graphique */}
-        <div className="right-column">
-          {result && (
-            <div className="result">
-              <h3>
-                Résultats pour : {result.meta.longName || result.meta.symbol}
-              </h3>
-              <p>
-                <strong>Symbole :</strong> {result.meta.symbol}
-              </p>
-              <p>
-                <strong>Nom complet :</strong> {result.meta.fullExchangeName}
-              </p>
-              <p>
-                <strong>Type d'instrument :</strong>{" "}
-                {result.meta.instrumentType}
-              </p>
-              <p>
-                <strong>Fuseau horaire :</strong> {result.meta.timezone}
-              </p>
-              <p>
-                <strong>Prix actuel :</strong> ${result.meta.regularMarketPrice}
-              </p>
-              <p>
-                <strong>Volume :</strong> {result.meta.regularMarketVolume}
-              </p>
-              <p>
-                <strong>52 semaines - Haut :</strong> $
-                {result.meta.fiftyTwoWeekHigh}
-              </p>
-              <p>
-                <strong>52 semaines - Bas :</strong> $
-                {result.meta.fiftyTwoWeekLow}
-              </p>
-
-              {/* Affichage du graphique */}
-              <div className="chart">
-                <h4>Historique des prix ({range})</h4>
-                <Line data={chartData} />
+      {result && (
+        <div className="content">
+          <div className="chart-section">
+            <div className="chart-header">
+              <h2>{result.meta.longName || result.meta.symbol}</h2>
+              <div className="chart-actions">
+                <button className="action-button">
+                  <BsStar />
+                  <span>Surveiller</span>
+                </button>
+                <button className="action-button">
+                  <BsBell />
+                  <span>Créer une alerte</span>
+                </button>
               </div>
             </div>
-          )}
+            <div className="chart-container">
+              {chartData && <Line data={chartData} options={chartOptions} />}
+            </div>
+          </div>
+
+          <div className="info-section">
+            <h3>Informations générales</h3>
+            <div className="info-grid">
+              <div className="info-item">
+                <span className="label">Symbole</span>
+                <span className="value">{result.meta.symbol}</span>
+              </div>
+              <div className="info-item">
+                <span className="label">Bourse</span>
+                <span className="value">{result.meta.fullExchangeName}</span>
+              </div>
+              <div className="info-item">
+                <span className="label">Type</span>
+                <span className="value">{result.meta.instrumentType}</span>
+              </div>
+              <div className="info-item">
+                <span className="label">Prix actuel</span>
+                <span className="value">${result.meta.regularMarketPrice}</span>
+              </div>
+              <div className="info-item">
+                <span className="label">Volume</span>
+                <span className="value">{result.meta.regularMarketVolume}</span>
+              </div>
+              <div className="info-item">
+                <span className="label">52 semaines - Haut</span>
+                <span className="value">${result.meta.fiftyTwoWeekHigh}</span>
+              </div>
+              <div className="info-item">
+                <span className="label">52 semaines - Bas</span>
+                <span className="value">${result.meta.fiftyTwoWeekLow}</span>
+              </div>
+            </div>
+          </div>
         </div>
-      </div>
+      )}
     </HomePageStyled>
   );
 }
@@ -184,46 +357,70 @@ const Navbar = styled.nav`
   justify-content: space-between;
   align-items: center;
   width: 100%;
-  padding: 10px 20px;
-  background-color: #2b3139;
-  color: #e9ecef;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  padding: 8px 16px;
+  background-color: #1e222d;
+  color: #d1d4dc;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  height: 64px;
+  position: fixed;
+  top: 0;
+  z-index: 1000;
+  border-bottom: 1px solid #2a2e39;
 
-  .logo img {
-    height: 40px;
+  .logo {
+    display: flex;
+    align-items: center;
+
+    img {
+      height: 28px;
+      margin-right: 8px;
+    }
   }
 
   .nav-links {
     display: flex;
-    gap: 20px;
+    gap: 24px;
+    margin-left: 32px;
 
     a {
       text-decoration: none;
-      color: #e9ecef;
-      font-weight: bold;
-      transition: color 0.3s ease;
+      color: #d1d4dc;
+      font-weight: 500;
+      font-size: 13px;
+      padding: 6px 12px;
+      border-radius: 4px;
+      transition: all 0.2s ease;
 
       &:hover {
-        color: #2087f1;
+        color: #2962ff;
+        background-color: rgba(41, 98, 255, 0.1);
       }
     }
   }
 
   .account {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+
     a {
       display: flex;
       align-items: center;
       text-decoration: none;
-      color: #e9ecef;
-      font-weight: bold;
-      transition: color 0.3s ease;
+      color: #d1d4dc;
+      font-weight: 500;
+      font-size: 13px;
+      padding: 6px 12px;
+      border-radius: 4px;
+      transition: all 0.2s ease;
 
       &:hover {
-        color: #2087f1;
+        color: #2962ff;
+        background-color: rgba(41, 98, 255, 0.1);
       }
 
       .icon {
-        font-size: 24px;
+        font-size: 18px;
         margin-right: 8px;
       }
     }
@@ -231,101 +428,288 @@ const Navbar = styled.nav`
 `;
 
 const HomePageStyled = styled.div`
-  height: 100vh;
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  background-color: #18191f;
-  color: #e9ecef;
+  background-color: #131722;
+  color: #d1d4dc;
   font-family: "Poppins", sans-serif;
+  padding-top: 64px;
 
   .header {
     margin-top: 20px;
     text-align: center;
+    padding: 0 20px;
 
     h1 {
-      color: #2087f1;
+      color: #d1d4dc;
+      font-size: 24px;
+      font-weight: 500;
+    }
+  }
+
+  .search-section {
+    width: 95%;
+    max-width: 1400px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #1e222d;
+    border-radius: 8px;
+    border: 1px solid #2a2e39;
+  }
+
+  .search-form {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+  }
+
+  .search-input-container {
+    position: relative;
+    flex: 1;
+
+    .search-icon {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #787b86;
+      font-size: 14px;
+    }
+
+    .search-input {
+      width: 100%;
+      padding: 10px 12px 10px 36px;
+      font-size: 13px;
+      border: 1px solid #2a2e39;
+      border-radius: 4px;
+      outline: none;
+      background-color: #2a2e39;
+      color: #d1d4dc;
+      transition: all 0.2s ease;
+
+      &:focus {
+        border-color: #2962ff;
+        background-color: #2a2e39;
+      }
+    }
+  }
+
+  .suggestions-container {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background-color: #1e222d;
+    border: 1px solid #2a2e39;
+    border-radius: 4px;
+    margin-top: 4px;
+    max-height: 300px;
+    overflow-y: auto;
+    z-index: 1000;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  }
+
+  .suggestion-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 12px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    border-bottom: 1px solid #2a2e39;
+
+    &:hover {
+      background-color: #2a2e39;
+    }
+
+    .suggestion-info {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+
+      .symbol {
+        font-weight: 500;
+        color: #d1d4dc;
+        font-size: 13px;
+      }
+
+      .name {
+        font-size: 11px;
+        color: #787b86;
+      }
+    }
+
+    .suggestion-price {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 2px;
+
+      .price {
+        font-weight: 500;
+        font-size: 13px;
+      }
+
+      .change {
+        font-size: 11px;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+
+        &.positive {
+          color: #26a69a;
+        }
+
+        &.negative {
+          color: #ef5350;
+        }
+      }
+    }
+  }
+
+  .range-selector {
+    select {
+      padding: 10px 12px;
+      font-size: 13px;
+      border: 1px solid #2a2e39;
+      border-radius: 4px;
+      outline: none;
+      background-color: #2a2e39;
+      color: #d1d4dc;
+      transition: all 0.2s ease;
+
+      &:focus {
+        border-color: #2962ff;
+      }
+    }
+  }
+
+  .search-button {
+    padding: 10px 20px;
+    font-size: 13px;
+    font-weight: 500;
+    color: #d1d4dc;
+    background-color: #2962ff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    &:hover:not(:disabled) {
+      background-color: #1e4bd8;
+    }
+
+    &:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
     }
   }
 
   .content {
     display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    width: 90%;
-    max-width: 1200px;
-    margin-top: 20px;
+    gap: 20px;
+    width: 95%;
+    max-width: 1400px;
+    margin: 20px auto;
     padding-bottom: 100px;
   }
 
-  .left-column,
-  .right-column {
-    flex: 1;
-    margin: 0 10px;
+  .chart-section {
+    flex: 2;
+    background-color: #1e222d;
+    border-radius: 8px;
+    border: 1px solid #2a2e39;
     padding: 20px;
-    background-color: #2b3139;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  }
 
-  .left-column {
-    max-width: 400px;
-
-    h2 {
-      margin-bottom: 20px;
-      color: #2087f1;
-    }
-
-    form {
+    .chart-header {
       display: flex;
-      flex-direction: column;
-      gap: 10px;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid #2a2e39;
 
-      input,
-      select {
-        padding: 10px;
-        font-size: 16px;
-        border: 1px solid #2087f1;
-        border-radius: 5px;
-        outline: none;
+      h2 {
+        color: #d1d4dc;
+        font-size: 18px;
+        font-weight: 500;
       }
 
-      button {
-        padding: 10px;
-        font-size: 16px;
-        font-weight: bold;
-        color: white;
-        background-color: #2087f1;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-        transition: background-color 0.3s ease;
+      .chart-actions {
+        display: flex;
+        gap: 12px;
 
-        &:hover {
-          background-color: #0056b3;
+        .action-button {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          padding: 8px 16px;
+          font-size: 13px;
+          font-weight: 500;
+          color: #d1d4dc;
+          background-color: #2a2e39;
+          border: 1px solid #2a2e39;
+          border-radius: 4px;
+          cursor: pointer;
+          transition: all 0.2s ease;
+
+          &:hover {
+            background-color: #2a2e39;
+            border-color: #2962ff;
+          }
         }
       }
     }
 
-    .error {
-      margin-top: 20px;
-      color: red;
+    .chart-container {
+      height: 500px;
+      position: relative;
     }
   }
 
-  .right-column {
-    .result {
-      h3 {
-        color: #2087f1;
+  .info-section {
+    flex: 1;
+    background-color: #1e222d;
+    border-radius: 8px;
+    border: 1px solid #2a2e39;
+    padding: 20px;
+
+    h3 {
+      color: #d1d4dc;
+      font-size: 16px;
+      font-weight: 500;
+      margin-bottom: 20px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid #2a2e39;
+    }
+
+    .info-grid {
+      display: grid;
+      gap: 16px;
+    }
+
+    .info-item {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+
+      .label {
+        color: #787b86;
+        font-size: 12px;
       }
 
-      p {
-        margin: 5px 0;
-      }
-
-      .chart {
-        margin-top: 20px;
+      .value {
+        color: #d1d4dc;
+        font-size: 14px;
+        font-weight: 500;
       }
     }
+  }
+
+  .error {
+    color: #ef5350;
+    font-size: 12px;
+    margin-top: 8px;
   }
 `;
