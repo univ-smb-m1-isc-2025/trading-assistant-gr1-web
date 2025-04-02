@@ -7,7 +7,7 @@ export default function ErrorPage() {
       <div className="error-container">
         <h1>404</h1>
         <p>Oups ! La page que vous recherchez n'existe pas.</p>
-        <Link to="/">
+        <Link to="/home">
           <button>Retourner à l'accueil</button>
         </Link>
       </div>

@@ -11,21 +11,50 @@ import Logo from "../../reusable-ui/Logo";
 
 export default function LoginForm() {
   // state
-  // const [inputEmail, setInputEmail] = useState("");
   const navigate = useNavigate();
 
-  // comportement
-  const handleSubmit = (evt) => {
-    evt.preventDefault();
-    // setInputEmail("");
-    navigate(`/home`);
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+  });
+
+  const [error, setError] = useState(null);
+  const [success, setSuccess] = useState(null);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
   };
 
-  // const handleChange = (evt) => {
-  //   setInputEmail(evt.target.value);
-  // };
+  // gestion de la soumission du formulaire
+  const handleSubmit = async (evt) => {
+    evt.preventDefault();
+    setError(null);
+    setSuccess(null);
 
-  // render
+    try {
+      const response = await fetch("http://localhost:8080/api/users/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (response.ok) {
+        setSuccess("Login successful");
+        navigate(`/home`);
+      } else {
+        const errorData = await response.json();
+        setError(errorData.message || "Une erreur est survenue");
+      }
+    } catch (err) {
+      console.log(formData);
+
+      setError("Erreur réseau : Veuillez réessayer plus tard.");
+    }
+  };
+
   return (
     <LoginFormStyled action="submit" onSubmit={handleSubmit}>
       <div className="login-form">
@@ -35,23 +64,32 @@ export default function LoginForm() {
           <h2>Connexion</h2>
         </div>
         <Input
-          type={"text"}
+          type={"email"}
+          name="email"
           placeholder={"Email"}
+          value={formData.email}
+          onChange={handleChange}
           required
           Icon={<BsPersonCircle className="icon" />}
         />
 
         <Input
           type={"password"}
-          placeholder={"Password"}
+          name="password"
+          placeholder={"Mot de passe"}
+          value={formData.password}
+          onChange={handleChange}
           required
           Icon={<RiLockPasswordFill className="icon" />}
         />
 
         <button className="button-with-icon">
-          <span type="submit">Login</span>
+          <span type="submit">Connexion</span>
           <IoChevronForward className="icon" />
         </button>
+
+        {error && <p className="error">{error}</p>}
+        {success && <p className="success">{success}</p>}
 
         <div className="or">
           <hr />
@@ -68,7 +106,6 @@ export default function LoginForm() {
             }}
             onError={() => console.log("login failed")}
             auto_select={true}
-            // type="icon"
             theme="filled_black"
             shape="rectangular"
             text="continue_with"
@@ -88,6 +125,7 @@ export default function LoginForm() {
 const LoginFormStyled = styled.form`
   text-align: center;
   font-family: "Poppins", sans-serif;
+  padding-bottom: 100px;
 
   .login-form {
     text-align: center;
@@ -125,7 +163,6 @@ const LoginFormStyled = styled.form`
       hr {
         border: 1px solid #2b3139;
         width: 100%;
-        /* margin: 0 20px;*/
       }
     }
 
@@ -148,9 +185,9 @@ const LoginFormStyled = styled.form`
       display: inline-flex;
       justify-content: center;
       align-items: center;
-      position: relative; //is used in case you want to create interactive icons where an icon replaces the text label.
-      white-space: nowrap; //prevents the text label from wrapping to the next line.
-      text-decoration: none; //removes the text decoration in case you’re applying the .btn class to a link.
+      position: relative;
+      white-space: nowrap;
+      text-decoration: none;
       line-height: 1;
 
       padding: 18px 24px;
@@ -201,6 +238,16 @@ const LoginFormStyled = styled.form`
         font-size: 15px;
         margin-left: 10px;
       }
+    }
+
+    .error {
+      color: red;
+      margin-top: 10px;
+    }
+
+    .success {
+      color: green;
+      margin-top: 10px;
     }
   }
 
