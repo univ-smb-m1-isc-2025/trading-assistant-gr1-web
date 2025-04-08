@@ -133,7 +133,7 @@ export default function HomePage() {
 
     try {
       const response = await fetch(
-        `http://localhost:8080/api/finance/chart/${symbol}?range=${range}`
+        `https://api.trademate.oups.net/api/finance/chart/${symbol}?range=${range}`
       );
 
       if (response.ok) {

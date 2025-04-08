@@ -39,7 +39,7 @@ export default function SignUpForm() {
     setSuccess(null);
 
     try {
-      const response = await fetch("http://localhost:8080/api/users", {
+      const response = await fetch("https://api.trademate.oups.net/api/users", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
