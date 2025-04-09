@@ -103,11 +103,19 @@ export default function LoginForm() {
         <div className="google-button">
           <GoogleLogin
             onSuccess={(credentialResponse) => {
-              console.log(credentialResponse);
-              console.log(jwtDecode(credentialResponse.credential));
+              const decoded = jwtDecode(credentialResponse.credential);
+              console.log("Utilisateur connecté : ", decoded);
+
+              // Enregistrer le token dans le localStorage
+              localStorage.setItem(
+                "googleToken",
+                credentialResponse.credential
+              );
+
+              // Rediriger l'utilisateur vers la page d'accueil
               navigate(`/home`);
             }}
-            onError={() => console.log("login failed")}
+            onError={() => console.log("Échec de la connexion Google")}
             auto_select={true}
             theme="filled_black"
             shape="rectangular"
