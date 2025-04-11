@@ -33,9 +33,9 @@ export default function LoginForm() {
     setSuccess(null);
 
     try {
-      // http://localhost:8080
-      // https://api.trademate.oups.net
-      const response = await fetch("http://localhost:8080/api/users/login", {
+      const apiURL = import.meta.env.VITE_URL_API;
+
+      const response = await fetch(`${apiURL}/api/users/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -44,6 +44,16 @@ export default function LoginForm() {
       });
 
       if (response.ok) {
+        const data = await response.json();
+        console.log("Utilisateur connecté : ", data);
+        const token = data.token;
+
+        console.log("Token : ", token);
+
+        // Enregistrer le token dans le localStorage
+        localStorage.setItem("authToken", token);
+
+        // Rediriger l'utilisateur vers la page d'accueil
         setSuccess("Login successful");
         navigate(`/home`);
       } else {
