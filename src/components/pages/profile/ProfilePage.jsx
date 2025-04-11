@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
 import Logo from "../../reusable-ui/Logo";
+import { jwtDecode } from "jwt-decode";
 
 const ProfilePageStyled = styled.div`
   height: 100vh;
@@ -13,6 +14,16 @@ const ProfilePageStyled = styled.div`
   background-color: #18191f;
   color: #e9ecef;
   font-family: "Poppins", sans-serif;
+
+  .error {
+    color: red;
+    margin-top: 10px;
+  }
+
+  .success {
+    color: green;
+    margin-top: 10px;
+  }
 `;
 
 const ProfileContainer = styled.div`
@@ -75,28 +86,65 @@ const ProfileValue = styled.div`
 const ProfilePage = () => {
   const [userProfile, setUserProfile] = useState(null);
   const navigate = useNavigate();
+  const [error, setError] = useState(null);
+  const [success, setSuccess] = useState(null);
 
   useEffect(() => {
     // Récupérer les informations du profil depuis le localStorage
-    const userData = localStorage.getItem("user");
+    const token = localStorage.getItem("authToken");
+    const userData = jwtDecode(token);
+
     if (userData) {
-      setUserProfile(JSON.parse(userData));
+      setUserProfile(userData);
     } else {
       navigate("/login");
     }
   }, [navigate]);
 
-  const handleDeleteProfile = () => {
-    if (
-      window.confirm(
-        "Êtes-vous sûr de vouloir supprimer votre profil ? Cette action est irréversible."
-      )
-    ) {
-      // Supprimer les données du localStorage
-      localStorage.removeItem("user");
-      localStorage.removeItem("token");
-      // Rediriger vers la page de connexion
-      navigate("/login");
+  const handleDeleteProfile = async () => {
+    try {
+      const apiURL = import.meta.env.VITE_URL_API;
+
+      const token = localStorage.getItem("authToken");
+
+      console.log("Token REQUEST : ", token);
+
+      // Vérifier si l'utilisateur est connecté
+      if (!token) {
+        setError("Vous devez être connecté pour supprimer votre profil.");
+        return;
+      }
+
+      if (
+        window.confirm(
+          "Êtes-vous sûr de vouloir supprimer votre profil ? Cette action est irréversible."
+        )
+      ) {
+        // `${apiURL}/api/finance/chart/${symbol}?range=${range}`
+        const id = 8;
+
+        const response = await fetch(`/api/users/${id}`, {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (response.ok) {
+          setSuccess("Profil supprimé avec succès !");
+          // Supprimer le token du localStorage
+          localStorage.removeItem("authToken");
+          // Rediriger vers la page de connexion
+          navigate("/login");
+        } else {
+          const errorData = await response.json();
+          console.log("Error data: ", errorData);
+          setError("Une erreur est survenue lors de la suppression du profil.");
+        }
+      }
+    } catch (err) {
+      setError("Erreur réseau. Veuillez réessayer plus tard.");
     }
   };
 
@@ -116,51 +164,23 @@ const ProfilePage = () => {
         </ProfileHeader>
 
         <ProfileSection>
-          <ProfileLabel>Nom</ProfileLabel>
-          <ProfileValue>{userProfile.name}</ProfileValue>
-        </ProfileSection>
-
-        <ProfileSection>
           <ProfileLabel>Email</ProfileLabel>
-          <ProfileValue>{userProfile.email}</ProfileValue>
+          <ProfileValue>{userProfile.sub}</ProfileValue>
         </ProfileSection>
 
         <ProfileSection>
-          <ProfileLabel>Date d'inscription</ProfileLabel>
-          <ProfileValue>
-            {new Date(userProfile.createdAt).toLocaleDateString("fr-FR")}
-          </ProfileValue>
+          <ProfileLabel>IAT</ProfileLabel>
+          <ProfileValue>{userProfile.iat}</ProfileValue>
         </ProfileSection>
 
-        {userProfile.preferences && (
-          <ProfileSection>
-            <ProfileLabel>Préférences</ProfileLabel>
-            <ProfileValue>
-              {Object.entries(userProfile.preferences).map(([key, value]) => (
-                <div key={key}>
-                  <strong>{key}:</strong> {value}
-                </div>
-              ))}
-            </ProfileValue>
-          </ProfileSection>
-        )}
-
-        {userProfile.tradingPreferences && (
-          <ProfileSection>
-            <ProfileLabel>Préférences de Trading</ProfileLabel>
-            <ProfileValue>
-              {Object.entries(userProfile.tradingPreferences).map(
-                ([key, value]) => (
-                  <div key={key}>
-                    <strong>{key}:</strong>{" "}
-                    {Array.isArray(value) ? value.join(", ") : value}
-                  </div>
-                )
-              )}
-            </ProfileValue>
-          </ProfileSection>
-        )}
+        <ProfileSection>
+          <ProfileLabel>EXP</ProfileLabel>
+          <ProfileValue>{userProfile.exp}</ProfileValue>
+        </ProfileSection>
       </ProfileContainer>
+      {/* Affichage des messages d'erreur ou de succès */}
+      {error && <p className="error">{error}</p>}
+      {success && <p className="success">{success}</p>}
     </ProfilePageStyled>
   );
 };
