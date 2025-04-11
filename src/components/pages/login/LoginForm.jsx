@@ -33,9 +33,7 @@ export default function LoginForm() {
     setSuccess(null);
 
     try {
-      const apiURL = import.meta.env.VITE_URL_API;
-
-      const response = await fetch(`${apiURL}/api/users/login`, {
+      const response = await fetch(`/api/api/users/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -49,6 +47,8 @@ export default function LoginForm() {
         const token = data.token;
 
         console.log("Token : ", token);
+
+        console.log("Token id : ", token.id);
 
         // Enregistrer le token dans le localStorage
         localStorage.setItem("authToken", token);

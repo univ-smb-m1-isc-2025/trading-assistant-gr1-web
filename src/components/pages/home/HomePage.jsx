@@ -158,9 +158,6 @@ export default function HomePage() {
       }
     : null;
 
-  // const userCoded = localStorage.getItem("googleToken");
-  // const userUncoded = jwtDecode(userCoded);
-
   const userToken = localStorage.getItem("authToken");
   const user = jwtDecode(userToken);
   console.log("User : ", user);
@@ -182,8 +179,9 @@ export default function HomePage() {
         <div className="account">
           <Link to="/profile">
             <BsPersonCircle className="icon" />
-            <span>{user.sub}</span>
-            {/* <span>Profil</span> */}
+            <span>
+              {user.prenom} {user.nom}
+            </span>
           </Link>
         </div>
       </Navbar>
