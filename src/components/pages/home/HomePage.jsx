@@ -88,65 +88,31 @@ const chartOptions = {
 };
 
 export default function HomePage() {
-  const { username } = useParams();
   const [symbol, setSymbol] = useState("");
   const [range, setRange] = useState("1mo");
   const [result, setResult] = useState(null);
   const [error, setError] = useState(null);
-  const [suggestions, setSuggestions] = useState([]);
-  const [showSuggestions, setShowSuggestions] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-
-  // Fonction pour obtenir les suggestions
-  const fetchSuggestions = async (query) => {
-    if (query.length < 2) {
-      setSuggestions([]);
-      return;
-    }
-
-    try {
-      const response = await fetch(
-        `http://localhost:8080/api/finance/search?query=${query}`
-      );
-      if (response.ok) {
-        const data = await response.json();
-        setSuggestions(data.quotes || []);
-      }
-    } catch (err) {
-      console.error("Erreur lors de la recherche des suggestions:", err);
-    }
-  };
-
-  // useEffect(() => {
-  //   const timer = setTimeout(() => {
-  //     fetchSuggestions(symbol);
-  //   }, 300);
-
-  //   return () => clearTimeout(timer);
-  // }, [symbol]);
 
   const handleSearch = async (e) => {
     e.preventDefault();
     setError(null);
     setResult(null);
     setIsLoading(true);
-    setShowSuggestions(false);
 
     try {
-      const apiURL = import.meta.env.VITE_URL_API;
-
       const token = localStorage.getItem("authToken");
 
       console.log("Token REQUEST : ", token);
 
       // `${apiURL}/api/finance/chart/${symbol}?range=${range}`
       const response = await fetch(
-        `/api/finance/chart/${symbol}?range=${range}`,
+        `/api/api/finance/chart/${symbol}?range=${range}`,
         {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+            Authorization: `Bearer ${token}`,
           },
         }
       );
@@ -162,12 +128,6 @@ export default function HomePage() {
     } finally {
       setIsLoading(false);
     }
-  };
-
-  const handleSuggestionClick = (suggestion) => {
-    setSymbol(suggestion.symbol);
-    setShowSuggestions(false);
-    handleSearch({ preventDefault: () => {} });
   };
 
   const chartData = result
@@ -238,58 +198,11 @@ export default function HomePage() {
               value={symbol}
               onChange={(e) => {
                 setSymbol(e.target.value);
-                setShowSuggestions(true);
               }}
-              onFocus={() => setShowSuggestions(true)}
               required
               className="search-input"
             />
           </div>
-
-          {showSuggestions && suggestions.length > 0 && (
-            <div className="suggestions-container">
-              {suggestions.map((suggestion) => (
-                <div
-                  key={suggestion.symbol}
-                  className="suggestion-item"
-                  onClick={() => handleSuggestionClick(suggestion)}
-                >
-                  <div className="suggestion-info">
-                    <span className="symbol">{suggestion.symbol}</span>
-                    <span className="name">{suggestion.longname}</span>
-                  </div>
-                  <div className="suggestion-price">
-                    <span
-                      className={`price ${
-                        suggestion.regularMarketChangePercent > 0
-                          ? "positive"
-                          : "negative"
-                      }`}
-                    >
-                      ${suggestion.regularMarketPrice}
-                    </span>
-                    <span
-                      className={`change ${
-                        suggestion.regularMarketChangePercent > 0
-                          ? "positive"
-                          : "negative"
-                      }`}
-                    >
-                      {suggestion.regularMarketChangePercent > 0 ? (
-                        <BsArrowUpRight />
-                      ) : (
-                        <BsArrowDownRight />
-                      )}
-                      {Math.abs(suggestion.regularMarketChangePercent).toFixed(
-                        2
-                      )}
-                      %
-                    </span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
 
           <div className="range-selector">
             <select value={range} onChange={(e) => setRange(e.target.value)}>
