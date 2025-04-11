@@ -38,10 +38,10 @@ export default function SignUpForm() {
     setError(null);
     setSuccess(null);
 
-    // http://localhost:8080
-    // https://api.trademate.oups.net
     try {
-      const response = await fetch("http://localhost:8080/api/users", {
+      const apiURL = import.meta.env.VITE_URL_API;
+
+      const response = await fetch(`${apiURL}http://localhost:8080/api/users`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

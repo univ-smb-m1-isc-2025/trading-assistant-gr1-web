@@ -133,10 +133,17 @@ export default function HomePage() {
     setShowSuggestions(false);
 
     try {
-      // http://localhost:8080
-      // https://api.trademate.oups.net
+      const apiURL = import.meta.env.VITE_URL_API;
+
       const response = await fetch(
-        `http://localhost:8080/api/finance/chart/${symbol}?range=${range}`
+        `${apiURL}/api/finance/chart/${symbol}?range=${range}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("googleToken")}`,
+          },
+        }
       );
 
       if (response.ok) {
