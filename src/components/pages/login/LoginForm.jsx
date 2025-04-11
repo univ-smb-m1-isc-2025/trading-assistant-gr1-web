@@ -33,16 +33,15 @@ export default function LoginForm() {
     setSuccess(null);
 
     try {
-      const response = await fetch(
-        "https://api.trademate.oups.net/api/users/login",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(formData),
-        }
-      );
+      // http://localhost:8080
+      // https://api.trademate.oups.net
+      const response = await fetch("http://localhost:8080/api/users/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
 
       if (response.ok) {
         setSuccess("Login successful");
@@ -103,11 +102,19 @@ export default function LoginForm() {
         <div className="google-button">
           <GoogleLogin
             onSuccess={(credentialResponse) => {
-              console.log(credentialResponse);
-              console.log(jwtDecode(credentialResponse.credential));
+              const decoded = jwtDecode(credentialResponse.credential);
+              console.log("Utilisateur connecté : ", decoded);
+
+              // Enregistrer le token dans le localStorage
+              localStorage.setItem(
+                "googleToken",
+                credentialResponse.credential
+              );
+
+              // Rediriger l'utilisateur vers la page d'accueil
               navigate(`/home`);
             }}
-            onError={() => console.log("login failed")}
+            onError={() => console.log("Échec de la connexion Google")}
             auto_select={true}
             theme="filled_black"
             shape="rectangular"
