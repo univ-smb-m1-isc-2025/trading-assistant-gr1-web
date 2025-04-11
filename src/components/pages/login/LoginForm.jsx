@@ -33,16 +33,15 @@ export default function LoginForm() {
     setSuccess(null);
 
     try {
-      const response = await fetch(
-        "https://api.trademate.oups.net/api/users/login",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(formData),
-        }
-      );
+      // http://localhost:8080
+      // https://api.trademate.oups.net
+      const response = await fetch("http://localhost:8080/api/users/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
 
       if (response.ok) {
         setSuccess("Login successful");

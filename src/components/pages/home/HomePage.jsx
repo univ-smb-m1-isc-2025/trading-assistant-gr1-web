@@ -20,6 +20,7 @@ import {
   Legend,
 } from "chart.js";
 import Logo from "../../reusable-ui/Logo";
+import { jwtDecode } from "jwt-decode";
 
 // Enregistrer les composants nécessaires pour Chart.js
 ChartJS.register(
@@ -132,8 +133,10 @@ export default function HomePage() {
     setShowSuggestions(false);
 
     try {
+      // http://localhost:8080
+      // https://api.trademate.oups.net
       const response = await fetch(
-        `https://api.trademate.oups.net/api/finance/chart/${symbol}?range=${range}`
+        `http://localhost:8080/api/finance/chart/${symbol}?range=${range}`
       );
 
       if (response.ok) {
@@ -183,6 +186,11 @@ export default function HomePage() {
       }
     : null;
 
+  const userCoded = localStorage.getItem("googleToken");
+  const userUncoded = jwtDecode(userCoded);
+
+  console.log("Utilisateur :", userUncoded);
+
   return (
     <HomePageStyled>
       <Navbar>
@@ -200,7 +208,7 @@ export default function HomePage() {
         <div className="account">
           <Link to="/profile">
             <BsPersonCircle className="icon" />
-            <span>Profil</span>
+            <span>{userUncoded.name}</span>
           </Link>
         </div>
       </Navbar>
