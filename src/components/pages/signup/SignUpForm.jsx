@@ -39,9 +39,7 @@ export default function SignUpForm() {
     setSuccess(null);
 
     try {
-      const apiURL = import.meta.env.VITE_URL_API;
-
-      const response = await fetch(`${apiURL}/api/users`, {
+      const response = await fetch(`/api/api/users`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -50,6 +48,18 @@ export default function SignUpForm() {
       });
 
       if (response.ok) {
+        const data = await response.json();
+        console.log("Utilisateur créé : ", data);
+        const token = data.token;
+
+        console.log("Token : ", token);
+
+        console.log("Token id : ", token.id);
+
+        // Enregistrer le token dans le localStorage
+        localStorage.setItem("authToken", token);
+
+        // Rediriger l'utilisateur vers la page d'accueil
         setSuccess("Compte créé avec succès !");
         navigate(`/home`);
       } else {
@@ -58,6 +68,7 @@ export default function SignUpForm() {
       }
     } catch (err) {
       console.log(formData);
+
       setError("Erreur réseau : Veuillez réessayer plus tard.");
     }
   };

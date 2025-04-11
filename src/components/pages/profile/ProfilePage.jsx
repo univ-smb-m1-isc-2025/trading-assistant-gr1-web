@@ -103,8 +103,6 @@ const ProfilePage = () => {
 
   const handleDeleteProfile = async () => {
     try {
-      const apiURL = import.meta.env.VITE_URL_API;
-
       const token = localStorage.getItem("authToken");
 
       console.log("Token REQUEST : ", token);
@@ -121,9 +119,9 @@ const ProfilePage = () => {
         )
       ) {
         // `${apiURL}/api/finance/chart/${symbol}?range=${range}`
-        const id = 8;
+        const id = userProfile.id;
 
-        const response = await fetch(`/api/users/${id}`, {
+        const response = await fetch(`/api/api/users/${id}`, {
           method: "DELETE",
           headers: {
             "Content-Type": "application/json",
