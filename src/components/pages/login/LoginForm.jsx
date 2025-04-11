@@ -44,6 +44,16 @@ export default function LoginForm() {
       });
 
       if (response.ok) {
+        const data = await response.json();
+        console.log("Utilisateur connecté : ", data);
+        const token = data.token;
+
+        console.log("Token : ", token);
+
+        // Enregistrer le token dans le localStorage
+        localStorage.setItem("authToken", token);
+
+        // Rediriger l'utilisateur vers la page d'accueil
         setSuccess("Login successful");
         navigate(`/home`);
       } else {

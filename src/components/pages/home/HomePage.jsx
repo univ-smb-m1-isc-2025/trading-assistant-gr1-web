@@ -135,13 +135,18 @@ export default function HomePage() {
     try {
       const apiURL = import.meta.env.VITE_URL_API;
 
+      const token = localStorage.getItem("authToken");
+
+      console.log("Token REQUEST : ", token);
+
+      // `${apiURL}/api/finance/chart/${symbol}?range=${range}`
       const response = await fetch(
-        `${apiURL}/api/finance/chart/${symbol}?range=${range}`,
+        `/api/finance/chart/${symbol}?range=${range}`,
         {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("googleToken")}`,
+            Authorization: `Bearer ${localStorage.getItem("authToken")}`,
           },
         }
       );
@@ -193,10 +198,12 @@ export default function HomePage() {
       }
     : null;
 
-  const userCoded = localStorage.getItem("googleToken");
-  const userUncoded = jwtDecode(userCoded);
+  // const userCoded = localStorage.getItem("googleToken");
+  // const userUncoded = jwtDecode(userCoded);
 
-  console.log("Utilisateur :", userUncoded);
+  const userToken = localStorage.getItem("authToken");
+  const user = jwtDecode(userToken);
+  console.log("User : ", user);
 
   return (
     <HomePageStyled>
@@ -215,7 +222,8 @@ export default function HomePage() {
         <div className="account">
           <Link to="/profile">
             <BsPersonCircle className="icon" />
-            <span>{userUncoded.name}</span>
+            <span>{user.sub}</span>
+            {/* <span>Profil</span> */}
           </Link>
         </div>
       </Navbar>
