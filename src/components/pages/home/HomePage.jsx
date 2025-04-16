@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Link, useParams } from "react-router-dom";
 import styled from "styled-components";
 import { Line } from "react-chartjs-2";
@@ -21,6 +21,13 @@ import {
 } from "chart.js";
 import Logo from "../../reusable-ui/Logo";
 import { jwtDecode } from "jwt-decode";
+
+import {
+  AreaSeries,
+  createChart,
+  ColorType,
+  CandlestickSeries,
+} from "lightweight-charts";
 
 // Enregistrer les composants nécessaires pour Chart.js
 ChartJS.register(
@@ -87,17 +94,145 @@ const chartOptions = {
   },
 };
 
+export const ChartComponent = ({
+  data,
+  colors: { backgroundColor = "#1e222d", textColor = "white" } = {},
+}) => {
+  const chartContainerRef = useRef();
+
+  useEffect(() => {
+    if (!data || data.length === 0) {
+      console.error("Aucune donnée à afficher dans le graphique.");
+      return;
+    }
+
+    const handleResize = () => {
+      chart.applyOptions({ width: chartContainerRef.current.clientWidth });
+    };
+
+    const chart = createChart(chartContainerRef.current, {
+      layout: {
+        background: { type: ColorType.Solid, color: backgroundColor },
+        textColor,
+      },
+      width: chartContainerRef.current.clientWidth,
+      height: 400,
+    });
+    chart.timeScale().fitContent();
+
+    console.log("Données passées au graphique :", data);
+
+    const candlestickSeries = chart.addSeries(CandlestickSeries, {
+      upColor: "#26a69a",
+      downColor: "#ef5350",
+      borderVisible: false,
+      wickUpColor: "#26a69a",
+      wickDownColor: "#ef5350",
+    });
+    candlestickSeries.setData(data);
+
+    window.addEventListener("resize", handleResize);
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+
+      chart.remove();
+    };
+  }, [data, backgroundColor, textColor]);
+
+  return (
+    <div>
+      <div ref={chartContainerRef} />
+    </div>
+  );
+};
+
 export default function HomePage() {
   const [symbol, setSymbol] = useState("");
   const [range, setRange] = useState("1mo");
   const [result, setResult] = useState(null);
+  const [resultTrading, setResultTrading] = useState(null);
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+
+  const initialData = [
+    {
+      time: "2018-10-19",
+      open: 180.34,
+      high: 180.99,
+      low: 178.57,
+      close: 179.85,
+    },
+    {
+      time: "2018-10-22",
+      open: 180.82,
+      high: 181.4,
+      low: 177.56,
+      close: 178.75,
+    },
+    {
+      time: "2018-10-23",
+      open: 175.77,
+      high: 179.49,
+      low: 175.44,
+      close: 178.53,
+    },
+    {
+      time: "2018-10-24",
+      open: 178.58,
+      high: 182.37,
+      low: 176.31,
+      close: 176.97,
+    },
+    {
+      time: "2018-10-25",
+      open: 177.52,
+      high: 180.5,
+      low: 176.83,
+      close: 179.07,
+    },
+    {
+      time: "2018-10-26",
+      open: 176.88,
+      high: 177.34,
+      low: 170.91,
+      close: 172.23,
+    },
+    {
+      time: "2018-10-29",
+      open: 173.74,
+      high: 175.99,
+      low: 170.95,
+      close: 173.2,
+    },
+    {
+      time: "2018-10-30",
+      open: 173.16,
+      high: 176.43,
+      low: 172.64,
+      close: 176.24,
+    },
+    {
+      time: "2018-10-31",
+      open: 177.98,
+      high: 178.85,
+      low: 175.59,
+      close: 175.88,
+    },
+    {
+      time: "2018-11-01",
+      open: 176.84,
+      high: 180.86,
+      low: 175.9,
+      close: 180.46,
+    },
+  ];
 
   const handleSearch = async (e) => {
     e.preventDefault();
     setError(null);
     setResult(null);
+    setResultTrading(null);
     setIsLoading(true);
 
     try {
@@ -127,7 +262,28 @@ export default function HomePage() {
       if (response.ok) {
         const data = await response.json();
         setResult(data.chart.result[0]);
+        console.log("Données de response :", data.chart.result[0]);
       } else {
+        setError("Erreur lors de la récupération des données.");
+      }
+
+      const response2 = await fetch(
+        `/api/api/finance/patterns/${symbol}?range=${range}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response2.ok) {
+        const data2 = await response2.json();
+        console.log("Données de response2 :", data2.candles);
+        setResultTrading(data2.candles);
+      } else {
+        console.error("Erreur response2 :", await response2.text());
         setError("Erreur lors de la récupération des données.");
       }
     } catch (err) {
@@ -261,7 +417,28 @@ export default function HomePage() {
               </div>
             </div>
             <div className="chart-container">
-              {chartData && <Line data={chartData} options={chartOptions} />}
+              {/* {chartData && <Line data={chartData} options={chartOptions} />} */}
+              {resultTrading &&
+                // Formatage des données avant de les passer au ChartComponent
+                (() => {
+                  const formattedData = resultTrading.map((item) => ({
+                    time: item.date.split("T")[0], // Extrait uniquement la partie "YYYY-MM-DD" de la date
+                    open: item.open,
+                    high: item.high,
+                    low: item.low,
+                    close: item.close,
+                  }));
+
+                  return (
+                    <ChartComponent
+                      data={formattedData}
+                      colors={{
+                        backgroundColor: "#1e222d",
+                        textColor: "white",
+                      }}
+                    />
+                  );
+                })()}
             </div>
           </div>
 
@@ -615,7 +792,7 @@ const HomePageStyled = styled.div`
     }
 
     .chart-container {
-      height: 500px;
+      height: 400px;
       position: relative;
     }
   }
