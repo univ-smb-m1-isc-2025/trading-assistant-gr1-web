@@ -101,7 +101,14 @@ export default function HomePage() {
     setIsLoading(true);
 
     try {
-      const token = localStorage.getItem("authToken");
+      const token =
+        localStorage.getItem("authToken") ||
+        localStorage.getItem("googleToken");
+
+      if (!token) {
+        setError("Token non trouvé. Veuillez vous connecter.");
+        return;
+      }
 
       console.log("Token REQUEST : ", token);
 
@@ -158,9 +165,18 @@ export default function HomePage() {
       }
     : null;
 
-  const userToken = localStorage.getItem("authToken");
-  const user = jwtDecode(userToken);
-  console.log("User : ", user);
+  const userToken =
+    localStorage.getItem("authToken") || localStorage.getItem("googleToken");
+
+  let user = null;
+  if (userToken) {
+    try {
+      user = jwtDecode(userToken);
+      console.log("User : ", user);
+    } catch (error) {
+      console.error("Erreur lors du décodage du token : ", error);
+    }
+  }
 
   return (
     <HomePageStyled>
@@ -180,7 +196,9 @@ export default function HomePage() {
           <Link to="/profile">
             <BsPersonCircle className="icon" />
             <span>
-              {user.prenom} {user.nom}
+              {user.prenom && user.nom
+                ? `${user.prenom} ${user.nom}`
+                : user.name}
             </span>
           </Link>
         </div>
