@@ -1,96 +1,71 @@
-import React, { useState, useEffect } from "react";
-import { Link, useParams } from "react-router-dom";
+import React, { useState, useEffect, useRef } from "react";
+import { Link } from "react-router-dom";
 import styled from "styled-components";
-import { Line } from "react-chartjs-2";
-import {
-  BsPersonCircle,
-  BsSearch,
-  BsArrowUpRight,
-  BsArrowDownRight,
-  BsBell,
-  BsStar,
-} from "react-icons/bs";
-import {
-  Chart as ChartJS,
-  LineElement,
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  Tooltip,
-  Legend,
-} from "chart.js";
+import { BsPersonCircle, BsSearch, BsBell, BsStar } from "react-icons/bs";
+
 import Logo from "../../reusable-ui/Logo";
 import { jwtDecode } from "jwt-decode";
 
-// Enregistrer les composants nécessaires pour Chart.js
-ChartJS.register(
-  LineElement,
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  Tooltip,
-  Legend
-);
+import { createChart, ColorType, CandlestickSeries } from "lightweight-charts";
 
-// Configuration du graphique
-const chartOptions = {
-  responsive: true,
-  maintainAspectRatio: false,
-  interaction: {
-    mode: "index",
-    intersect: false,
-  },
-  plugins: {
-    legend: {
-      display: false,
-    },
-    tooltip: {
-      backgroundColor: "#1e222d",
-      titleColor: "#2962ff",
-      bodyColor: "#d1d4dc",
-      borderColor: "#2a2e39",
-      borderWidth: 1,
-      padding: 12,
-      displayColors: false,
-      callbacks: {
-        label: function (context) {
-          return `Prix: $${context.parsed.y.toFixed(2)}`;
-        },
+export const ChartComponent = ({
+  data,
+  colors: { backgroundColor = "#1e222d", textColor = "white" } = {},
+}) => {
+  const chartContainerRef = useRef();
+
+  useEffect(() => {
+    if (!data || data.length === 0) {
+      console.error("Aucune donnée à afficher dans le graphique.");
+      return;
+    }
+
+    const handleResize = () => {
+      chart.applyOptions({ width: chartContainerRef.current.clientWidth });
+    };
+
+    const chart = createChart(chartContainerRef.current, {
+      layout: {
+        background: { type: ColorType.Solid, color: backgroundColor },
+        textColor,
       },
-    },
-  },
-  scales: {
-    x: {
-      grid: {
-        color: "#2a2e39",
-        drawBorder: false,
-      },
-      ticks: {
-        color: "#787b86",
-        font: {
-          size: 11,
-        },
-      },
-    },
-    y: {
-      grid: {
-        color: "#2a2e39",
-        drawBorder: false,
-      },
-      ticks: {
-        color: "#787b86",
-        font: {
-          size: 11,
-        },
-      },
-    },
-  },
+      width: chartContainerRef.current.clientWidth,
+      height: 400,
+    });
+    chart.timeScale().fitContent();
+
+    console.log("Données passées au graphique :", data);
+
+    const candlestickSeries = chart.addSeries(CandlestickSeries, {
+      upColor: "#26a69a",
+      downColor: "#ef5350",
+      borderVisible: false,
+      wickUpColor: "#26a69a",
+      wickDownColor: "#ef5350",
+    });
+    candlestickSeries.setData(data);
+
+    window.addEventListener("resize", handleResize);
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+
+      chart.remove();
+    };
+  }, [data, backgroundColor, textColor]);
+
+  return (
+    <div>
+      <div ref={chartContainerRef} />
+    </div>
+  );
 };
 
 export default function HomePage() {
   const [symbol, setSymbol] = useState("");
   const [range, setRange] = useState("1mo");
   const [result, setResult] = useState(null);
+  const [resultTrading, setResultTrading] = useState(null);
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -98,6 +73,7 @@ export default function HomePage() {
     e.preventDefault();
     setError(null);
     setResult(null);
+    setResultTrading(null);
     setIsLoading(true);
 
     try {
@@ -112,7 +88,6 @@ export default function HomePage() {
 
       console.log("Token REQUEST : ", token);
 
-      // `${apiURL}/api/finance/chart/${symbol}?range=${range}`
       const response = await fetch(
         `/api/api/finance/chart/${symbol}?range=${range}`,
         {
@@ -127,7 +102,28 @@ export default function HomePage() {
       if (response.ok) {
         const data = await response.json();
         setResult(data.chart.result[0]);
+        console.log("Données de response :", data.chart.result[0]);
       } else {
+        setError("Erreur lors de la récupération des données.");
+      }
+
+      const response2 = await fetch(
+        `/api/api/finance/patterns/${symbol}?range=${range}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response2.ok) {
+        const data2 = await response2.json();
+        console.log("Données de response2 :", data2.candles);
+        setResultTrading(data2.candles);
+      } else {
+        console.error("Erreur response2 :", await response2.text());
         setError("Erreur lors de la récupération des données.");
       }
     } catch (err) {
@@ -136,34 +132,6 @@ export default function HomePage() {
       setIsLoading(false);
     }
   };
-
-  const chartData = result
-    ? {
-        labels: result.timestamp.map((ts) =>
-          new Date(ts * 1000).toLocaleDateString("fr-FR")
-        ),
-        datasets: [
-          {
-            label: `Prix de clôture (${result.meta.currency})`,
-            data: result.indicators.quote[0].close,
-            borderColor: "#2962ff",
-            backgroundColor: "rgba(41, 98, 255, 0.1)",
-            borderWidth: 2,
-            tension: 0.4,
-            fill: true,
-            pointRadius: 0,
-            pointHoverRadius: 4,
-            pointHoverBackgroundColor: "#2962ff",
-            pointHoverBorderColor: "#fff",
-            pointHoverBorderWidth: 2,
-            pointHoverRadius: 6,
-            pointStyle: "circle",
-            pointBackgroundColor: "#2962ff",
-            pointBorderColor: "#2962ff",
-          },
-        ],
-      }
-    : null;
 
   const userToken =
     localStorage.getItem("authToken") || localStorage.getItem("googleToken");
@@ -261,7 +229,27 @@ export default function HomePage() {
               </div>
             </div>
             <div className="chart-container">
-              {chartData && <Line data={chartData} options={chartOptions} />}
+              {resultTrading &&
+                // Formatage des données avant de les passer au ChartComponent
+                (() => {
+                  const formattedData = resultTrading.map((item) => ({
+                    time: item.date.split("T")[0], // Extrait uniquement la partie "YYYY-MM-DD" de la date
+                    open: item.open,
+                    high: item.high,
+                    low: item.low,
+                    close: item.close,
+                  }));
+
+                  return (
+                    <ChartComponent
+                      data={formattedData}
+                      colors={{
+                        backgroundColor: "#1e222d",
+                        textColor: "white",
+                      }}
+                    />
+                  );
+                })()}
             </div>
           </div>
 
@@ -615,7 +603,7 @@ const HomePageStyled = styled.div`
     }
 
     .chart-container {
-      height: 500px;
+      height: 400px;
       position: relative;
     }
   }
