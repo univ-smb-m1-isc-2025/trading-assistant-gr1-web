@@ -1,98 +1,12 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link } from "react-router-dom";
 import styled from "styled-components";
-import { Line } from "react-chartjs-2";
-import {
-  BsPersonCircle,
-  BsSearch,
-  BsArrowUpRight,
-  BsArrowDownRight,
-  BsBell,
-  BsStar,
-} from "react-icons/bs";
-import {
-  Chart as ChartJS,
-  LineElement,
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  Tooltip,
-  Legend,
-} from "chart.js";
+import { BsPersonCircle, BsSearch, BsBell, BsStar } from "react-icons/bs";
+
 import Logo from "../../reusable-ui/Logo";
 import { jwtDecode } from "jwt-decode";
 
-import {
-  AreaSeries,
-  createChart,
-  ColorType,
-  CandlestickSeries,
-} from "lightweight-charts";
-
-// Enregistrer les composants nécessaires pour Chart.js
-ChartJS.register(
-  LineElement,
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  Tooltip,
-  Legend
-);
-
-// Configuration du graphique
-const chartOptions = {
-  responsive: true,
-  maintainAspectRatio: false,
-  interaction: {
-    mode: "index",
-    intersect: false,
-  },
-  plugins: {
-    legend: {
-      display: false,
-    },
-    tooltip: {
-      backgroundColor: "#1e222d",
-      titleColor: "#2962ff",
-      bodyColor: "#d1d4dc",
-      borderColor: "#2a2e39",
-      borderWidth: 1,
-      padding: 12,
-      displayColors: false,
-      callbacks: {
-        label: function (context) {
-          return `Prix: $${context.parsed.y.toFixed(2)}`;
-        },
-      },
-    },
-  },
-  scales: {
-    x: {
-      grid: {
-        color: "#2a2e39",
-        drawBorder: false,
-      },
-      ticks: {
-        color: "#787b86",
-        font: {
-          size: 11,
-        },
-      },
-    },
-    y: {
-      grid: {
-        color: "#2a2e39",
-        drawBorder: false,
-      },
-      ticks: {
-        color: "#787b86",
-        font: {
-          size: 11,
-        },
-      },
-    },
-  },
-};
+import { createChart, ColorType, CandlestickSeries } from "lightweight-charts";
 
 export const ChartComponent = ({
   data,
@@ -155,79 +69,6 @@ export default function HomePage() {
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  const initialData = [
-    {
-      time: "2018-10-19",
-      open: 180.34,
-      high: 180.99,
-      low: 178.57,
-      close: 179.85,
-    },
-    {
-      time: "2018-10-22",
-      open: 180.82,
-      high: 181.4,
-      low: 177.56,
-      close: 178.75,
-    },
-    {
-      time: "2018-10-23",
-      open: 175.77,
-      high: 179.49,
-      low: 175.44,
-      close: 178.53,
-    },
-    {
-      time: "2018-10-24",
-      open: 178.58,
-      high: 182.37,
-      low: 176.31,
-      close: 176.97,
-    },
-    {
-      time: "2018-10-25",
-      open: 177.52,
-      high: 180.5,
-      low: 176.83,
-      close: 179.07,
-    },
-    {
-      time: "2018-10-26",
-      open: 176.88,
-      high: 177.34,
-      low: 170.91,
-      close: 172.23,
-    },
-    {
-      time: "2018-10-29",
-      open: 173.74,
-      high: 175.99,
-      low: 170.95,
-      close: 173.2,
-    },
-    {
-      time: "2018-10-30",
-      open: 173.16,
-      high: 176.43,
-      low: 172.64,
-      close: 176.24,
-    },
-    {
-      time: "2018-10-31",
-      open: 177.98,
-      high: 178.85,
-      low: 175.59,
-      close: 175.88,
-    },
-    {
-      time: "2018-11-01",
-      open: 176.84,
-      high: 180.86,
-      low: 175.9,
-      close: 180.46,
-    },
-  ];
-
   const handleSearch = async (e) => {
     e.preventDefault();
     setError(null);
@@ -247,7 +88,6 @@ export default function HomePage() {
 
       console.log("Token REQUEST : ", token);
 
-      // `${apiURL}/api/finance/chart/${symbol}?range=${range}`
       const response = await fetch(
         `/api/api/finance/chart/${symbol}?range=${range}`,
         {
@@ -292,34 +132,6 @@ export default function HomePage() {
       setIsLoading(false);
     }
   };
-
-  const chartData = result
-    ? {
-        labels: result.timestamp.map((ts) =>
-          new Date(ts * 1000).toLocaleDateString("fr-FR")
-        ),
-        datasets: [
-          {
-            label: `Prix de clôture (${result.meta.currency})`,
-            data: result.indicators.quote[0].close,
-            borderColor: "#2962ff",
-            backgroundColor: "rgba(41, 98, 255, 0.1)",
-            borderWidth: 2,
-            tension: 0.4,
-            fill: true,
-            pointRadius: 0,
-            pointHoverRadius: 4,
-            pointHoverBackgroundColor: "#2962ff",
-            pointHoverBorderColor: "#fff",
-            pointHoverBorderWidth: 2,
-            pointHoverRadius: 6,
-            pointStyle: "circle",
-            pointBackgroundColor: "#2962ff",
-            pointBorderColor: "#2962ff",
-          },
-        ],
-      }
-    : null;
 
   const userToken =
     localStorage.getItem("authToken") || localStorage.getItem("googleToken");
@@ -417,7 +229,6 @@ export default function HomePage() {
               </div>
             </div>
             <div className="chart-container">
-              {/* {chartData && <Line data={chartData} options={chartOptions} />} */}
               {resultTrading &&
                 // Formatage des données avant de les passer au ChartComponent
                 (() => {
