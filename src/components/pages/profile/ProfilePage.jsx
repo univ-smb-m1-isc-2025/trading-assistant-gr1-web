@@ -91,21 +91,29 @@ const ProfilePage = () => {
 
   useEffect(() => {
     // Récupérer les informations du profil depuis le localStorage
-    const token = localStorage.getItem("authToken");
-    const userData = jwtDecode(token);
+    const token =
+      localStorage.getItem("authToken") || localStorage.getItem("googleToken");
 
-    if (userData) {
+    if (!token) {
+      navigate("/login");
+      return;
+    }
+
+    try {
+      const userData = jwtDecode(token);
       setUserProfile(userData);
-    } else {
+    } catch (error) {
+      console.error("Erreur lors du décodage du token : ", error);
+      setError("Erreur lors de la récupération des informations du profil.");
       navigate("/login");
     }
   }, [navigate]);
 
   const handleDeleteProfile = async () => {
     try {
-      const token = localStorage.getItem("authToken");
-
-      console.log("Token REQUEST : ", token);
+      const token =
+        localStorage.getItem("authToken") ||
+        localStorage.getItem("googleToken");
 
       // Vérifier si l'utilisateur est connecté
       if (!token) {
@@ -133,6 +141,7 @@ const ProfilePage = () => {
           setSuccess("Profil supprimé avec succès !");
           // Supprimer le token du localStorage
           localStorage.removeItem("authToken");
+          localStorage.removeItem("googleToken");
           // Rediriger vers la page de connexion
           navigate("/login");
         } else {
@@ -150,33 +159,76 @@ const ProfilePage = () => {
     return <div>Chargement...</div>;
   }
 
+  // Déterminer si c'est une connexion classique ou via Google
+  const isGoogleLogin = userProfile.name && userProfile.given_name;
+
   return (
     <ProfilePageStyled>
       <Logo />
       <ProfileContainer>
         <ProfileHeader>
           <ProfileTitle>Mon Profil</ProfileTitle>
-          <DeleteButton onClick={handleDeleteProfile}>
-            Supprimer le profil
-          </DeleteButton>
+          {!isGoogleLogin && (
+            <DeleteButton onClick={handleDeleteProfile}>
+              Supprimer le profil
+            </DeleteButton>
+          )}
         </ProfileHeader>
 
-        <ProfileSection>
-          <ProfileLabel>Email</ProfileLabel>
-          <ProfileValue>{userProfile.sub}</ProfileValue>
-        </ProfileSection>
-
-        <ProfileSection>
-          <ProfileLabel>IAT</ProfileLabel>
-          <ProfileValue>{userProfile.iat}</ProfileValue>
-        </ProfileSection>
-
-        <ProfileSection>
-          <ProfileLabel>EXP</ProfileLabel>
-          <ProfileValue>{userProfile.exp}</ProfileValue>
-        </ProfileSection>
+        {isGoogleLogin ? (
+          // Affichage pour une connexion Google
+          <>
+            <ProfileSection>
+              <ProfileLabel>Nom complet</ProfileLabel>
+              <ProfileValue>{userProfile.name}</ProfileValue>
+            </ProfileSection>
+            <ProfileSection>
+              <ProfileLabel>Email</ProfileLabel>
+              <ProfileValue>{userProfile.email}</ProfileValue>
+            </ProfileSection>
+            <ProfileSection>
+              <ProfileLabel>Email vérifié</ProfileLabel>
+              <ProfileValue>
+                {userProfile.email_verified ? "Oui" : "Non"}
+              </ProfileValue>
+            </ProfileSection>
+            <ProfileSection>
+              <ProfileLabel>Prénom</ProfileLabel>
+              <ProfileValue>{userProfile.given_name}</ProfileValue>
+            </ProfileSection>
+            <ProfileSection>
+              <ProfileLabel>Nom</ProfileLabel>
+              <ProfileValue>{userProfile.family_name}</ProfileValue>
+            </ProfileSection>
+          </>
+        ) : (
+          // Affichage pour une connexion classique
+          <>
+            <ProfileSection>
+              <ProfileLabel>Prénom</ProfileLabel>
+              <ProfileValue>{userProfile.prenom}</ProfileValue>
+            </ProfileSection>
+            <ProfileSection>
+              <ProfileLabel>Nom</ProfileLabel>
+              <ProfileValue>{userProfile.nom}</ProfileValue>
+            </ProfileSection>
+            <ProfileSection>
+              <ProfileLabel>Email</ProfileLabel>
+              <ProfileValue>{userProfile.email}</ProfileValue>
+            </ProfileSection>
+            <ProfileSection>
+              <ProfileLabel>Téléphone</ProfileLabel>
+              <ProfileValue>{userProfile.telephone}</ProfileValue>
+            </ProfileSection>
+            <ProfileSection>
+              <ProfileLabel>Date de création</ProfileLabel>
+              <ProfileValue>
+                {new Date(userProfile.created_at).toLocaleDateString("fr-FR")}
+              </ProfileValue>
+            </ProfileSection>
+          </>
+        )}
       </ProfileContainer>
-      {/* Affichage des messages d'erreur ou de succès */}
       {error && <p className="error">{error}</p>}
       {success && <p className="success">{success}</p>}
     </ProfilePageStyled>
