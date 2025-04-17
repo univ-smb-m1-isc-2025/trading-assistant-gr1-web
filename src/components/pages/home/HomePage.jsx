@@ -159,7 +159,7 @@ export default function HomePage() {
       <Navbar>
         <div className="logo">
           <Link to="/home">
-            <img src="/images/logo.png" alt="Logo" />
+            <Logo />
           </Link>
         </div>
         <div className="nav-links">
@@ -332,9 +332,8 @@ const Navbar = styled.nav`
     display: flex;
     align-items: center;
 
-    img {
-      height: 28px;
-      margin-right: 8px;
+    a {
+      text-decoration: none;
     }
   }
 
