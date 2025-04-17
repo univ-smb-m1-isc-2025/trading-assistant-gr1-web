@@ -88,6 +88,10 @@ export default function HomePage() {
 
       console.log("Token REQUEST : ", token);
 
+      const apiUrl = import.meta.env.VITE_URL_API;
+
+      console.log("API URL : ", apiUrl);
+
       const response = await fetch(
         `/api/api/finance/chart/${symbol}?range=${range}`,
         {
@@ -105,6 +109,7 @@ export default function HomePage() {
         console.log("Données de response :", data.chart.result[0]);
       } else {
         setError("Erreur lors de la récupération des données.");
+        console.log(response);
       }
 
       const response2 = await fetch(

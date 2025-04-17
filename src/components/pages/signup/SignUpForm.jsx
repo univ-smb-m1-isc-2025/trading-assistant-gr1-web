@@ -39,6 +39,8 @@ export default function SignUpForm() {
     setSuccess(null);
 
     try {
+      const apiUrl = import.meta.env.VITE_URL_API;
+
       const response = await fetch(`/api/api/users`, {
         method: "POST",
         headers: {
