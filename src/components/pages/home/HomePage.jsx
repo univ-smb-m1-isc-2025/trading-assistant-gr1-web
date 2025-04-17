@@ -213,10 +213,6 @@ export default function HomePage() {
               <h2>{result.meta.longName || result.meta.symbol}</h2>
               <div className="chart-actions">
                 <button className="action-button">
-                  <BsStar />
-                  <span>Surveiller</span>
-                </button>
-                <button className="action-button">
                   <BsBell />
                   <span>Créer une alerte</span>
                 </button>
