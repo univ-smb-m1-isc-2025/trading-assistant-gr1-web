@@ -75,6 +75,56 @@ export default function SignUpForm() {
     }
   };
 
+  const handleGoogleSignUp = async (googleData) => {
+    try {
+      const decodedToken = jwtDecode(googleData.credential);
+
+      console.log("Decoded Google Token : ", decodedToken);
+
+      // Préparez les données pour l'inscription
+      const googleFormData = {
+        firstname: decodedToken.given_name,
+        lastname: decodedToken.family_name,
+        email: decodedToken.email,
+        phone: "", // Si vous voulez un champ vide pour le téléphone
+        password: "GoogleDefaultPassword123!", // Vous pouvez générer un mot de passe aléatoire ou utiliser le token
+      };
+
+      console.log("Google Form Data : ", googleFormData);
+
+      const apiUrl = import.meta.env.VITE_URL_API;
+
+      const response = await fetch(`/api/users`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(googleFormData),
+      });
+
+      if (response.ok) {
+        // Vérifiez si la réponse contient un corps JSON
+        const data = await response.json();
+        console.log("Utilisateur créé via Google : ", data);
+
+        // Enregistrer le token dans le localStorage
+        if (data.token) {
+          localStorage.setItem("authToken", data.token);
+        }
+
+        // Rediriger l'utilisateur vers la page d'accueil
+        setSuccess("Compte créé avec succès via Google !");
+        navigate(`/home`);
+      } else {
+        const errorData = response.status !== 204 ? await response.json() : {};
+        setError(errorData.message || "Une erreur est survenue avec Google.");
+      }
+    } catch (err) {
+      console.error("Erreur lors de l'inscription avec Google :", err);
+      setError("Erreur réseau : Veuillez réessayer plus tard.");
+    }
+  };
+
   return (
     <SignUpFormStyled action="submit" onSubmit={handleSubmit}>
       <div className="signup-form">
@@ -152,9 +202,8 @@ export default function SignUpForm() {
         <div className="google-button">
           <GoogleLogin
             onSuccess={(credentialResponse) => {
-              console.log(credentialResponse);
-              console.log(jwtDecode(credentialResponse.credential));
-              navigate(`/home`);
+              console.log("Réponse Google : ", credentialResponse);
+              handleGoogleSignUp(credentialResponse);
             }}
             onError={() => console.log("Google Sign-Up échoué")}
             auto_select={true}
