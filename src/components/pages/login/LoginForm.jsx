@@ -70,6 +70,50 @@ export default function LoginForm() {
     }
   };
 
+  const handleGoogleLogin = async (googleData) => {
+    try {
+      const decodedToken = jwtDecode(googleData.credential);
+
+      console.log("Decoded Google Token : ", decodedToken);
+
+      // Préparez les données pour la connexion
+      const loginData = {
+        email: decodedToken.email,
+        password: "GoogleDefaultPassword123!", // Assurez-vous que ce mot de passe correspond à celui utilisé lors de l'inscription
+      };
+
+      const apiUrl = import.meta.env.VITE_URL_API;
+
+      const response = await fetch(`/api/users/login`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(loginData),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        console.log("Utilisateur connecté via Google : ", data);
+
+        // Enregistrer le token dans le localStorage
+        if (data.token) {
+          localStorage.setItem("authToken", data.token);
+        }
+
+        // Rediriger l'utilisateur vers la page d'accueil
+        setSuccess("Connexion réussie via Google !");
+        navigate(`/home`);
+      } else {
+        const errorData = await response.json();
+        setError(errorData.message || "Une erreur est survenue avec Google.");
+      }
+    } catch (err) {
+      console.error("Erreur lors de la connexion avec Google :", err);
+      setError("Erreur réseau : Veuillez réessayer plus tard.");
+    }
+  };
+
   return (
     <LoginFormStyled action="submit" onSubmit={handleSubmit}>
       <div className="login-form">
@@ -115,17 +159,11 @@ export default function LoginForm() {
         <div className="google-button">
           <GoogleLogin
             onSuccess={(credentialResponse) => {
-              const decoded = jwtDecode(credentialResponse.credential);
-              console.log("Utilisateur connecté : ", decoded);
-
-              // Enregistrer le token dans le localStorage
-              localStorage.setItem(
-                "googleToken",
-                credentialResponse.credential
+              console.log(
+                "Réponse Google pour le login : ",
+                credentialResponse
               );
-
-              // Rediriger l'utilisateur vers la page d'accueil
-              navigate(`/home`);
+              handleGoogleLogin(credentialResponse);
             }}
             onError={() => console.log("Échec de la connexion Google")}
             auto_select={true}
