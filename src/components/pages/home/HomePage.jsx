@@ -93,7 +93,7 @@ export default function HomePage() {
       console.log("API URL : ", apiUrl);
 
       const response = await fetch(
-        `/api/api/finance/chart/${symbol}?range=${range}`,
+        `/api/finance/chart/${symbol}?range=${range}`,
         {
           method: "GET",
           headers: {
@@ -113,7 +113,7 @@ export default function HomePage() {
       }
 
       const response2 = await fetch(
-        `/api/api/finance/patterns/${symbol}?range=${range}`,
+        `/api/finance/patterns/${symbol}?range=${range}`,
         {
           method: "GET",
           headers: {

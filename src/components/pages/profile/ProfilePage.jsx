@@ -131,7 +131,7 @@ const ProfilePage = () => {
 
         const apiURL = import.meta.env.VITE_URL_API;
 
-        const response = await fetch(`/api/api/users/${id}`, {
+        const response = await fetch(`/api/users/${id}`, {
           method: "DELETE",
           headers: {
             "Content-Type": "application/json",
