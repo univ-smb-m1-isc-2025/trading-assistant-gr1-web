@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const ProfilePageStyled = styled.div`
   min-height: 100vh;
@@ -188,11 +190,11 @@ const ProfilePage = () => {
         .then((data) => setAlerts(data))
         .catch((err) => {
           console.error("Erreur lors de la récupération des alertes :", err);
-          setError("Impossible de récupérer les alertes.");
+          toast.error("Impossible de récupérer les alertes.");
         });
     } catch (error) {
       console.error("Erreur lors du décodage du token : ", error);
-      setError("Erreur lors de la récupération des informations du profil.");
+      toast.error("Erreur lors de la récupération des informations du profil.");
       navigate("/login");
     }
   }, [navigate]);
@@ -207,7 +209,7 @@ const ProfilePage = () => {
 
       // Vérifier si l'utilisateur est connecté
       if (!token) {
-        setError("Vous devez être connecté pour supprimer votre profil.");
+        toast.error("Vous devez être connecté pour supprimer votre profil.");
         return;
       }
 
@@ -227,7 +229,7 @@ const ProfilePage = () => {
         });
 
         if (response.ok) {
-          setSuccess("Profil supprimé avec succès !");
+          toast.success("Profil supprimé avec succès !");
           // Supprimer le token du localStorage
           localStorage.removeItem("authToken");
           // Rediriger vers la page de connexion
@@ -235,11 +237,13 @@ const ProfilePage = () => {
         } else {
           const errorData = await response.json();
           console.log("Error data: ", errorData);
-          setError("Une erreur est survenue lors de la suppression du profil.");
+          toast.error(
+            "Une erreur est survenue lors de la suppression du profil."
+          );
         }
       }
     } catch (err) {
-      setError("Erreur réseau. Veuillez réessayer plus tard.");
+      toast.error("Erreur réseau. Veuillez réessayer plus tard.");
     }
   };
 
@@ -257,12 +261,12 @@ const ProfilePage = () => {
 
       if (response.ok) {
         setAlerts(alerts.filter((alert) => alert.id !== alertId));
-        setSuccess("Alerte supprimée avec succès !");
+        toast.success("Alerte supprimée avec succès !");
       } else {
-        setError("Erreur lors de la suppression de l'alerte.");
+        toast.error("Erreur lors de la suppression de l'alerte.");
       }
     } catch (err) {
-      setError("Erreur réseau. Veuillez réessayer plus tard.");
+      toast.error("Erreur réseau. Veuillez réessayer plus tard.");
     }
   };
 
@@ -336,6 +340,18 @@ const ProfilePage = () => {
       </ProfileContainer>
       {error && <p className="error">{error}</p>}
       {success && <p className="success">{success}</p>}
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="dark"
+      />
     </ProfilePageStyled>
   );
 };
