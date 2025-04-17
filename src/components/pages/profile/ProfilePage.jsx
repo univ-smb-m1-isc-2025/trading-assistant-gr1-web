@@ -129,6 +129,8 @@ const ProfilePage = () => {
         // `${apiURL}/api/finance/chart/${symbol}?range=${range}`
         const id = userProfile.id;
 
+        const apiURL = import.meta.env.VITE_URL_API;
+
         const response = await fetch(`/api/api/users/${id}`, {
           method: "DELETE",
           headers: {

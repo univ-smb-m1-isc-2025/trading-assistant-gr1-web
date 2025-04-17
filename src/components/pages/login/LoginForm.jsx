@@ -33,6 +33,9 @@ export default function LoginForm() {
     setSuccess(null);
 
     try {
+      const apiUrl = import.meta.env.VITE_URL_API;
+      console.log("API URL : ", apiUrl);
+
       const response = await fetch(`/api/api/users/login`, {
         method: "POST",
         headers: {
