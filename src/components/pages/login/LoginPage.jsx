@@ -1,6 +1,5 @@
 import LoginForm from "./LoginForm.jsx";
 import styled from "styled-components";
-import Logo from "../../reusable-ui/Logo.jsx";
 
 export default function LoginPage() {
   // state
@@ -10,7 +9,6 @@ export default function LoginPage() {
   // render
   return (
     <LoginPageStyled>
-      {/* <Logo /> */}
       <LoginForm />
     </LoginPageStyled>
   );
