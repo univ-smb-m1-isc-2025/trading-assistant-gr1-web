@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Link } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
 import styled from "styled-components";
 import { BsPersonCircle, BsSearch, BsBell, BsStar } from "react-icons/bs";
 
@@ -74,6 +74,7 @@ export default function HomePage() {
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
+  const [isAccountPopupOpen, setIsAccountPopupOpen] = useState(false);
 
   const handleSearch = async (e) => {
     e.preventDefault();
@@ -134,6 +135,11 @@ export default function HomePage() {
     }
   };
 
+  const handleLogout = () => {
+    window.location.href = "/login";
+    localStorage.removeItem("authToken");
+  };
+
   const handleSaveAlert = (alertData) => {
     console.log("Nouvelle alerte :", alertData);
 
@@ -168,11 +174,28 @@ export default function HomePage() {
           <Link to="/portfolio">Portefeuille</Link>
           <Link to="/about">À propos</Link>
         </div>
-        <div className="account">
+        <div
+          className="account"
+          onMouseEnter={() => setIsAccountPopupOpen(true)}
+          onMouseLeave={() => setIsAccountPopupOpen(false)}
+        >
           <Link to="/profile">
             <BsPersonCircle className="icon" />
             <span>{`${user.prenom} ${user.nom}`}</span>
           </Link>
+          {isAccountPopupOpen && (
+            <div className="account-popup">
+              <Link to="/profile" className="popup-item">
+                Voir le profil
+              </Link>
+              <button
+                onClick={handleLogout}
+                className="popup-item logout-button"
+              >
+                Se déconnecter
+              </button>
+            </div>
+          )}
         </div>
       </Navbar>
 
@@ -359,6 +382,7 @@ const Navbar = styled.nav`
   }
 
   .account {
+    position: relative;
     display: flex;
     align-items: center;
     gap: 16px;
@@ -382,6 +406,57 @@ const Navbar = styled.nav`
       .icon {
         font-size: 18px;
         margin-right: 8px;
+      }
+    }
+
+    .account-popup {
+      position: absolute;
+      top: 100%;
+      right: 0;
+      background-color: #1e222d;
+      border: 1px solid #2a2e39;
+      border-radius: 4px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      padding: 8px 0;
+      z-index: 1000;
+
+      .popup-item {
+        display: block;
+        padding: 8px 16px;
+        font-size: 13px;
+        color: #d1d4dc;
+        text-decoration: none;
+        cursor: pointer;
+        transition: all 0.2s ease;
+
+        &:hover {
+          background-color: rgba(41, 98, 255, 0.1);
+          color: #2962ff;
+        }
+
+        &:last-child {
+          border-top: 1px solid #2a2e39;
+        }
+      }
+
+      button {
+        background: none;
+        border: none;
+        width: 100%;
+        text-align: left;
+        padding: 8px 16px;
+        font-size: 13px;
+        color: #d1d4dc;
+        cursor: pointer;
+
+        &:hover {
+          background-color: rgba(41, 98, 255, 0.1);
+          color: #2962ff;
+        }
+      }
+
+      .logout-button {
+        color: #ef5350;
       }
     }
   }
