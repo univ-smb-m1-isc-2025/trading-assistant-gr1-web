@@ -83,9 +83,7 @@ export default function HomePage() {
     setIsLoading(true);
 
     try {
-      const token =
-        localStorage.getItem("authToken") ||
-        localStorage.getItem("googleToken");
+      const token = localStorage.getItem("authToken");
 
       if (!token) {
         setError("Token non trouvé. Veuillez vous connecter.");
@@ -173,11 +171,7 @@ export default function HomePage() {
         <div className="account">
           <Link to="/profile">
             <BsPersonCircle className="icon" />
-            <span>
-              {user.prenom && user.nom
-                ? `${user.prenom} ${user.nom}`
-                : user.name}
-            </span>
+            <span>{`${user.prenom} ${user.nom}`}</span>
           </Link>
         </div>
       </Navbar>
