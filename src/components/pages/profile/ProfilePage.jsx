@@ -100,11 +100,68 @@ const HomeButton = styled.button`
   }
 `;
 
+const AlertsSection = styled.div`
+  margin-top: 20px;
+  padding: 20px;
+  background-color: #1e222d;
+  border-radius: 8px;
+  border: 1px solid #2a2e39;
+
+  h2 {
+    color: #2087f1;
+    font-size: 20px;
+    margin-bottom: 16px;
+  }
+
+  .alert-item {
+    padding: 12px;
+    margin-bottom: 12px;
+    background-color: #2a2e39;
+    border-radius: 4px;
+    border: 1px solid #2a2e39;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    .alert-info {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+
+      .symbol {
+        font-weight: bold;
+        color: #d1d4dc;
+      }
+
+      .details {
+        font-size: 14px;
+        color: #787b86;
+      }
+    }
+
+    .delete-button {
+      background-color: #dc3545;
+      color: white;
+      border: none;
+      padding: 8px 12px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 12px;
+      transition: all 0.3s ease;
+
+      &:hover {
+        background-color: #c82333;
+      }
+    }
+  }
+`;
+
 const ProfilePage = () => {
   const [userProfile, setUserProfile] = useState(null);
-  const navigate = useNavigate();
+  const [alerts, setAlerts] = useState([]);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     // Récupérer les informations du profil depuis le localStorage
@@ -118,6 +175,21 @@ const ProfilePage = () => {
     try {
       const userData = jwtDecode(token);
       setUserProfile(userData);
+
+      // Récupérer les alertes actives
+      fetch(`/api/alerts/${userData.id}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      })
+        .then((response) => response.json())
+        .then((data) => setAlerts(data))
+        .catch((err) => {
+          console.error("Erreur lors de la récupération des alertes :", err);
+          setError("Impossible de récupérer les alertes.");
+        });
     } catch (error) {
       console.error("Erreur lors du décodage du token : ", error);
       setError("Erreur lors de la récupération des informations du profil.");
@@ -171,6 +243,29 @@ const ProfilePage = () => {
     }
   };
 
+  const handleDeleteAlert = async (alertId) => {
+    const token = localStorage.getItem("authToken");
+
+    try {
+      const response = await fetch(`/api/alerts/${alertId}`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (response.ok) {
+        setAlerts(alerts.filter((alert) => alert.id !== alertId));
+        setSuccess("Alerte supprimée avec succès !");
+      } else {
+        setError("Erreur lors de la suppression de l'alerte.");
+      }
+    } catch (err) {
+      setError("Erreur réseau. Veuillez réessayer plus tard.");
+    }
+  };
+
   if (!userProfile) {
     return <div>Chargement...</div>;
   }
@@ -210,6 +305,34 @@ const ProfilePage = () => {
             {new Date(userProfile.created_at).toLocaleDateString("fr-FR")}
           </ProfileValue>
         </ProfileSection>
+
+        <AlertsSection>
+          <h2>Alertes Actives</h2>
+          {alerts.length > 0 ? (
+            alerts.map((alert) => (
+              <div key={alert.id} className="alert-item">
+                <div className="alert-info">
+                  <span className="symbol">{alert.symbol}</span>
+                  <span className="details">
+                    Type : {alert.alertType}{" "}
+                    {alert.threshold && `| Seuil : ${alert.threshold}% `}
+                    {alert.priceLevel &&
+                      `| Niveau de prix : $${alert.priceLevel}`}
+                    {alert.days && `| Jours : ${alert.days}`}
+                  </span>
+                </div>
+                <button
+                  className="delete-button"
+                  onClick={() => handleDeleteAlert(alert.id)}
+                >
+                  Supprimer
+                </button>
+              </div>
+            ))
+          ) : (
+            <p>Aucune alerte active.</p>
+          )}
+        </AlertsSection>
       </ProfileContainer>
       {error && <p className="error">{error}</p>}
       {success && <p className="success">{success}</p>}
