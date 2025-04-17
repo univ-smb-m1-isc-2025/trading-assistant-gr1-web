@@ -32,6 +32,11 @@ const ProfileHeader = styled.div`
   margin-bottom: 20px;
   padding-bottom: 16px;
   border-bottom: 1px solid #2a2e39; /* Ligne de séparation */
+
+  .buttons {
+    display: flex;
+    gap: 12px; /* Espacement entre les boutons */
+  }
 `;
 
 const ProfileTitle = styled.h1`
@@ -182,7 +187,7 @@ const ProfilePage = () => {
       <ProfileContainer>
         <ProfileHeader>
           <ProfileTitle>Mon Profil</ProfileTitle>
-          <div>
+          <div className="buttons">
             <HomeButton onClick={handleGoHome}>Revenir à l'accueil</HomeButton>
             {!isGoogleLogin && (
               <DeleteButton onClick={handleDeleteProfile}>
