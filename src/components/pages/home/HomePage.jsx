@@ -1,12 +1,14 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
-import { BsPersonCircle, BsSearch, BsBell, BsStar } from "react-icons/bs";
+import { BsPersonCircle, BsSearch, BsBell } from "react-icons/bs";
 
 import Logo from "../../reusable-ui/Logo";
 import { jwtDecode } from "jwt-decode";
 
 import { createChart, ColorType, CandlestickSeries } from "lightweight-charts";
+
+import AlertPopup from "./AlertPopup";
 
 export const ChartComponent = ({
   data,
@@ -68,6 +70,7 @@ export default function HomePage() {
   const [resultTrading, setResultTrading] = useState(null);
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [isPopupOpen, setIsPopupOpen] = useState(false);
 
   const handleSearch = async (e) => {
     e.preventDefault();
@@ -134,6 +137,7 @@ export default function HomePage() {
     localStorage.getItem("authToken") || localStorage.getItem("googleToken");
 
   let user = null;
+
   if (userToken) {
     try {
       user = jwtDecode(userToken);
@@ -212,11 +216,21 @@ export default function HomePage() {
             <div className="chart-header">
               <h2>{result.meta.longName || result.meta.symbol}</h2>
               <div className="chart-actions">
-                <button className="action-button">
+                <button
+                  className="action-button"
+                  onClick={() => setIsPopupOpen(true)}
+                >
                   <BsBell />
                   <span>Créer une alerte</span>
                 </button>
               </div>
+
+              {isPopupOpen && (
+                <AlertPopup
+                  symbol={result.meta.symbol}
+                  onClose={() => setIsPopupOpen(false)}
+                />
+              )}
             </div>
             <div className="chart-container">
               {resultTrading &&
