@@ -108,8 +108,7 @@ const ProfilePage = () => {
 
   useEffect(() => {
     // Récupérer les informations du profil depuis le localStorage
-    const token =
-      localStorage.getItem("authToken") || localStorage.getItem("googleToken");
+    const token = localStorage.getItem("authToken");
 
     if (!token) {
       navigate("/login");
@@ -132,9 +131,7 @@ const ProfilePage = () => {
 
   const handleDeleteProfile = async () => {
     try {
-      const token =
-        localStorage.getItem("authToken") ||
-        localStorage.getItem("googleToken");
+      const token = localStorage.getItem("authToken");
 
       // Vérifier si l'utilisateur est connecté
       if (!token) {
@@ -161,7 +158,6 @@ const ProfilePage = () => {
           setSuccess("Profil supprimé avec succès !");
           // Supprimer le token du localStorage
           localStorage.removeItem("authToken");
-          localStorage.removeItem("googleToken");
           // Rediriger vers la page de connexion
           navigate("/login");
         } else {
@@ -179,9 +175,6 @@ const ProfilePage = () => {
     return <div>Chargement...</div>;
   }
 
-  // Déterminer si c'est une connexion classique ou via Google
-  const isGoogleLogin = userProfile.name && userProfile.given_name;
-
   return (
     <ProfilePageStyled>
       <ProfileContainer>
@@ -189,67 +182,34 @@ const ProfilePage = () => {
           <ProfileTitle>Mon Profil</ProfileTitle>
           <div className="buttons">
             <HomeButton onClick={handleGoHome}>Revenir à l'accueil</HomeButton>
-            {!isGoogleLogin && (
-              <DeleteButton onClick={handleDeleteProfile}>
-                Supprimer le profil
-              </DeleteButton>
-            )}
+            <DeleteButton onClick={handleDeleteProfile}>
+              Supprimer le profil
+            </DeleteButton>
           </div>
         </ProfileHeader>
 
-        {isGoogleLogin ? (
-          // Affichage pour une connexion Google
-          <>
-            <ProfileSection>
-              <ProfileLabel>Nom complet</ProfileLabel>
-              <ProfileValue>{userProfile.name}</ProfileValue>
-            </ProfileSection>
-            <ProfileSection>
-              <ProfileLabel>Email</ProfileLabel>
-              <ProfileValue>{userProfile.email}</ProfileValue>
-            </ProfileSection>
-            <ProfileSection>
-              <ProfileLabel>Email vérifié</ProfileLabel>
-              <ProfileValue>
-                {userProfile.email_verified ? "Oui" : "Non"}
-              </ProfileValue>
-            </ProfileSection>
-            <ProfileSection>
-              <ProfileLabel>Prénom</ProfileLabel>
-              <ProfileValue>{userProfile.given_name}</ProfileValue>
-            </ProfileSection>
-            <ProfileSection>
-              <ProfileLabel>Nom</ProfileLabel>
-              <ProfileValue>{userProfile.family_name}</ProfileValue>
-            </ProfileSection>
-          </>
-        ) : (
-          // Affichage pour une connexion classique
-          <>
-            <ProfileSection>
-              <ProfileLabel>Prénom</ProfileLabel>
-              <ProfileValue>{userProfile.prenom}</ProfileValue>
-            </ProfileSection>
-            <ProfileSection>
-              <ProfileLabel>Nom</ProfileLabel>
-              <ProfileValue>{userProfile.nom}</ProfileValue>
-            </ProfileSection>
-            <ProfileSection>
-              <ProfileLabel>Email</ProfileLabel>
-              <ProfileValue>{userProfile.email}</ProfileValue>
-            </ProfileSection>
-            <ProfileSection>
-              <ProfileLabel>Téléphone</ProfileLabel>
-              <ProfileValue>{userProfile.telephone}</ProfileValue>
-            </ProfileSection>
-            <ProfileSection>
-              <ProfileLabel>Date de création</ProfileLabel>
-              <ProfileValue>
-                {new Date(userProfile.created_at).toLocaleDateString("fr-FR")}
-              </ProfileValue>
-            </ProfileSection>
-          </>
-        )}
+        <ProfileSection>
+          <ProfileLabel>Prénom</ProfileLabel>
+          <ProfileValue>{userProfile.prenom}</ProfileValue>
+        </ProfileSection>
+        <ProfileSection>
+          <ProfileLabel>Nom</ProfileLabel>
+          <ProfileValue>{userProfile.nom}</ProfileValue>
+        </ProfileSection>
+        <ProfileSection>
+          <ProfileLabel>Email</ProfileLabel>
+          <ProfileValue>{userProfile.email}</ProfileValue>
+        </ProfileSection>
+        <ProfileSection>
+          <ProfileLabel>Téléphone</ProfileLabel>
+          <ProfileValue>{userProfile.telephone}</ProfileValue>
+        </ProfileSection>
+        <ProfileSection>
+          <ProfileLabel>Date de création</ProfileLabel>
+          <ProfileValue>
+            {new Date(userProfile.created_at).toLocaleDateString("fr-FR")}
+          </ProfileValue>
+        </ProfileSection>
       </ProfileContainer>
       {error && <p className="error">{error}</p>}
       {success && <p className="success">{success}</p>}
