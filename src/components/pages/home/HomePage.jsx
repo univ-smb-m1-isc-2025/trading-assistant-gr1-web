@@ -86,12 +86,6 @@ export default function HomePage() {
         return;
       }
 
-      console.log("Token REQUEST : ", token);
-
-      const apiUrl = import.meta.env.VITE_URL_API;
-
-      console.log("API URL : ", apiUrl);
-
       const response = await fetch(
         `/api/finance/chart/${symbol}?range=${range}`,
         {
@@ -106,7 +100,6 @@ export default function HomePage() {
       if (response.ok) {
         const data = await response.json();
         setResult(data.chart.result[0]);
-        console.log("Données de response :", data.chart.result[0]);
       } else {
         setError("Erreur lors de la récupération des données.");
         console.log(response);
@@ -125,7 +118,6 @@ export default function HomePage() {
 
       if (response2.ok) {
         const data2 = await response2.json();
-        console.log("Données de response2 :", data2.candles);
         setResultTrading(data2.candles);
       } else {
         console.error("Erreur response2 :", await response2.text());
@@ -145,7 +137,6 @@ export default function HomePage() {
   if (userToken) {
     try {
       user = jwtDecode(userToken);
-      console.log("User : ", user);
     } catch (error) {
       console.error("Erreur lors du décodage du token : ", error);
     }
@@ -195,8 +186,6 @@ export default function HomePage() {
 
           <div className="range-selector">
             <select value={range} onChange={(e) => setRange(e.target.value)}>
-              <option value="1d">1 jour</option>
-              <option value="5d">5 jours</option>
               <option value="1mo">1 mois</option>
               <option value="3mo">3 mois</option>
               <option value="6mo">6 mois</option>
