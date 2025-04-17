@@ -33,9 +33,6 @@ export default function LoginForm() {
     setSuccess(null);
 
     try {
-      const apiUrl = import.meta.env.VITE_URL_API;
-      console.log("API URL : ", apiUrl);
-
       const response = await fetch(`/api/users/login`, {
         method: "POST",
         headers: {
@@ -46,12 +43,7 @@ export default function LoginForm() {
 
       if (response.ok) {
         const data = await response.json();
-        console.log("Utilisateur connecté : ", data);
         const token = data.token;
-
-        console.log("Token : ", token);
-
-        console.log("Token id : ", token.id);
 
         // Enregistrer le token dans le localStorage
         localStorage.setItem("authToken", token);
@@ -65,7 +57,6 @@ export default function LoginForm() {
       }
     } catch (err) {
       console.log(formData);
-
       setError("Erreur réseau : Veuillez réessayer plus tard.");
     }
   };
@@ -74,15 +65,11 @@ export default function LoginForm() {
     try {
       const decodedToken = jwtDecode(googleData.credential);
 
-      console.log("Decoded Google Token : ", decodedToken);
-
       // Préparez les données pour la connexion
       const loginData = {
         email: decodedToken.email,
         password: "GoogleDefaultPassword123!", // Assurez-vous que ce mot de passe correspond à celui utilisé lors de l'inscription
       };
-
-      const apiUrl = import.meta.env.VITE_URL_API;
 
       const response = await fetch(`/api/users/login`, {
         method: "POST",
@@ -94,7 +81,6 @@ export default function LoginForm() {
 
       if (response.ok) {
         const data = await response.json();
-        console.log("Utilisateur connecté via Google : ", data);
 
         // Enregistrer le token dans le localStorage
         if (data.token) {
