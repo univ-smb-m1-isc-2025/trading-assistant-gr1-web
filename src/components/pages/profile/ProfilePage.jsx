@@ -161,8 +161,6 @@ const AlertsSection = styled.div`
 const ProfilePage = () => {
   const [userProfile, setUserProfile] = useState(null);
   const [alerts, setAlerts] = useState([]);
-  const [error, setError] = useState(null);
-  const [success, setSuccess] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -338,8 +336,6 @@ const ProfilePage = () => {
           )}
         </AlertsSection>
       </ProfileContainer>
-      {error && <p className="error">{error}</p>}
-      {success && <p className="success">{success}</p>}
       <ToastContainer
         position="top-right"
         autoClose={3000}
