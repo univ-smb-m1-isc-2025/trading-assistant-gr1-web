@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
-import { BsPersonCircle, BsSearch, BsBell } from "react-icons/bs";
+import { BsPersonCircle, BsSearch, BsBell, BsStar } from "react-icons/bs";
 
 import Logo from "../../reusable-ui/Logo";
 import { jwtDecode } from "jwt-decode";
@@ -9,6 +9,9 @@ import { jwtDecode } from "jwt-decode";
 import { createChart, ColorType, CandlestickSeries } from "lightweight-charts";
 
 import AlertPopup from "./AlertPopup";
+
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export const ChartComponent = ({
   data,
@@ -133,6 +136,13 @@ export default function HomePage() {
     }
   };
 
+  const handleSaveAlert = (alertData) => {
+    console.log("Nouvelle alerte :", alertData);
+
+    // Affichez une notification de succès
+    toast.success("Alerte enregistrée avec succès !");
+  };
+
   const userToken =
     localStorage.getItem("authToken") || localStorage.getItem("googleToken");
 
@@ -229,6 +239,7 @@ export default function HomePage() {
                 <AlertPopup
                   symbol={result.meta.symbol}
                   onClose={() => setIsPopupOpen(false)}
+                  onSave={handleSaveAlert}
                 />
               )}
             </div>
@@ -292,6 +303,18 @@ export default function HomePage() {
           </div>
         </div>
       )}
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="dark"
+      />
     </HomePageStyled>
   );
 }

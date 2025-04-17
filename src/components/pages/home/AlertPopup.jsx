@@ -2,7 +2,7 @@ import { jwtDecode } from "jwt-decode";
 import React, { useState } from "react";
 import styled from "styled-components";
 
-export default function AlertPopup({ symbol, onClose }) {
+export default function AlertPopup({ symbol, onClose, onSave }) {
   const [alertType, setAlertType] = useState("");
   const [threshold, setThreshold] = useState("");
   const [days, setDays] = useState("");
@@ -10,8 +10,16 @@ export default function AlertPopup({ symbol, onClose }) {
   const [priceLevel, setPriceLevel] = useState("");
 
   const handleSave = async () => {
-    const token = localStorage.getItem("authToken");
-    const userId = jwtDecode(token)?.id;
+    const token = localStorage.getItem("authToken"); // Récupérez le token depuis le stockage local ou une autre source
+    const userId = jwtDecode(token)?.id; // Décodez le token pour obtenir l'ID utilisateur
+    console.log("ID utilisateur :", userId);
+    console.log("Données de l'alerte :", {
+      alertType,
+      threshold,
+      days,
+      pattern,
+      priceLevel,
+    });
 
     if (!userId) {
       console.error("ID utilisateur introuvable.");
@@ -40,6 +48,7 @@ export default function AlertPopup({ symbol, onClose }) {
 
       if (response.ok) {
         console.log("Alerte enregistrée avec succès !");
+        onSave({ symbol, alertType, threshold, days, pattern, priceLevel }); // Appelez la fonction onSave pour mettre à jour l'état parent
         onClose(); // Fermez la popup
       } else {
         console.error(
