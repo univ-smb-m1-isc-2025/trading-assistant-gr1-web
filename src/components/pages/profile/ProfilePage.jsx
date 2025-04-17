@@ -126,10 +126,7 @@ const ProfilePage = () => {
           "Êtes-vous sûr de vouloir supprimer votre profil ? Cette action est irréversible."
         )
       ) {
-        // `${apiURL}/api/finance/chart/${symbol}?range=${range}`
         const id = userProfile.id;
-
-        const apiURL = import.meta.env.VITE_URL_API;
 
         const response = await fetch(`/api/users/${id}`, {
           method: "DELETE",

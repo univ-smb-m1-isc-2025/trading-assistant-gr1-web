@@ -1,11 +1,9 @@
 import SignUpForm from "./SignUpForm.jsx";
 import styled from "styled-components";
-// import Logo from "../../reusable-ui/Logo.jsx";
 
 export default function SignUpPage() {
   return (
     <SignUpPageStyled>
-      {/* <Logo /> */}
       <SignUpForm />
     </SignUpPageStyled>
   );

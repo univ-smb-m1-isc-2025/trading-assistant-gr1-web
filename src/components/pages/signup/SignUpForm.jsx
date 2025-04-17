@@ -39,8 +39,6 @@ export default function SignUpForm() {
     setSuccess(null);
 
     try {
-      const apiUrl = import.meta.env.VITE_URL_API;
-
       const response = await fetch(`/api/users`, {
         method: "POST",
         headers: {
@@ -51,12 +49,7 @@ export default function SignUpForm() {
 
       if (response.ok) {
         const data = await response.json();
-        console.log("Utilisateur créé : ", data);
         const token = data.token;
-
-        console.log("Token : ", token);
-
-        console.log("Token id : ", token.id);
 
         // Enregistrer le token dans le localStorage
         localStorage.setItem("authToken", token);
@@ -70,7 +63,6 @@ export default function SignUpForm() {
       }
     } catch (err) {
       console.log(formData);
-
       setError("Erreur réseau : Veuillez réessayer plus tard.");
     }
   };
@@ -78,8 +70,6 @@ export default function SignUpForm() {
   const handleGoogleSignUp = async (googleData) => {
     try {
       const decodedToken = jwtDecode(googleData.credential);
-
-      console.log("Decoded Google Token : ", decodedToken);
 
       // Préparez les données pour l'inscription
       const googleFormData = {
@@ -89,10 +79,6 @@ export default function SignUpForm() {
         phone: "", // Si vous voulez un champ vide pour le téléphone
         password: "GoogleDefaultPassword123!", // Vous pouvez générer un mot de passe aléatoire ou utiliser le token
       };
-
-      console.log("Google Form Data : ", googleFormData);
-
-      const apiUrl = import.meta.env.VITE_URL_API;
 
       const response = await fetch(`/api/users`, {
         method: "POST",
@@ -105,7 +91,6 @@ export default function SignUpForm() {
       if (response.ok) {
         // Vérifiez si la réponse contient un corps JSON
         const data = await response.json();
-        console.log("Utilisateur créé via Google : ", data);
 
         // Enregistrer le token dans le localStorage
         if (data.token) {
@@ -116,7 +101,7 @@ export default function SignUpForm() {
         setSuccess("Compte créé avec succès via Google !");
         navigate(`/home`);
       } else {
-        const errorData = response.status !== 204 ? await response.json() : {};
+        const errorData = await response.json();
         setError(errorData.message || "Une erreur est survenue avec Google.");
       }
     } catch (err) {

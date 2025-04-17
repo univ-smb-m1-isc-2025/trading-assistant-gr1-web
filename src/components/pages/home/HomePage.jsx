@@ -8,6 +8,11 @@ import { jwtDecode } from "jwt-decode";
 
 import { createChart, ColorType, CandlestickSeries } from "lightweight-charts";
 
+import AlertPopup from "./AlertPopup";
+
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 export const ChartComponent = ({
   data,
   colors: { backgroundColor = "#1e222d", textColor = "white" } = {},
@@ -68,6 +73,7 @@ export default function HomePage() {
   const [resultTrading, setResultTrading] = useState(null);
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [isPopupOpen, setIsPopupOpen] = useState(false);
 
   const handleSearch = async (e) => {
     e.preventDefault();
@@ -86,12 +92,6 @@ export default function HomePage() {
         return;
       }
 
-      console.log("Token REQUEST : ", token);
-
-      const apiUrl = import.meta.env.VITE_URL_API;
-
-      console.log("API URL : ", apiUrl);
-
       const response = await fetch(
         `/api/finance/chart/${symbol}?range=${range}`,
         {
@@ -106,7 +106,6 @@ export default function HomePage() {
       if (response.ok) {
         const data = await response.json();
         setResult(data.chart.result[0]);
-        console.log("Données de response :", data.chart.result[0]);
       } else {
         setError("Erreur lors de la récupération des données.");
         console.log(response);
@@ -125,7 +124,6 @@ export default function HomePage() {
 
       if (response2.ok) {
         const data2 = await response2.json();
-        console.log("Données de response2 :", data2.candles);
         setResultTrading(data2.candles);
       } else {
         console.error("Erreur response2 :", await response2.text());
@@ -138,14 +136,21 @@ export default function HomePage() {
     }
   };
 
+  const handleSaveAlert = (alertData) => {
+    console.log("Nouvelle alerte :", alertData);
+
+    // Affichez une notification de succès
+    toast.success("Alerte enregistrée avec succès !");
+  };
+
   const userToken =
     localStorage.getItem("authToken") || localStorage.getItem("googleToken");
 
   let user = null;
+
   if (userToken) {
     try {
       user = jwtDecode(userToken);
-      console.log("User : ", user);
     } catch (error) {
       console.error("Erreur lors du décodage du token : ", error);
     }
@@ -195,8 +200,6 @@ export default function HomePage() {
 
           <div className="range-selector">
             <select value={range} onChange={(e) => setRange(e.target.value)}>
-              <option value="1d">1 jour</option>
-              <option value="5d">5 jours</option>
               <option value="1mo">1 mois</option>
               <option value="3mo">3 mois</option>
               <option value="6mo">6 mois</option>
@@ -223,15 +226,22 @@ export default function HomePage() {
             <div className="chart-header">
               <h2>{result.meta.longName || result.meta.symbol}</h2>
               <div className="chart-actions">
-                <button className="action-button">
-                  <BsStar />
-                  <span>Surveiller</span>
-                </button>
-                <button className="action-button">
+                <button
+                  className="action-button"
+                  onClick={() => setIsPopupOpen(true)}
+                >
                   <BsBell />
                   <span>Créer une alerte</span>
                 </button>
               </div>
+
+              {isPopupOpen && (
+                <AlertPopup
+                  symbol={result.meta.symbol}
+                  onClose={() => setIsPopupOpen(false)}
+                  onSave={handleSaveAlert}
+                />
+              )}
             </div>
             <div className="chart-container">
               {resultTrading &&
@@ -293,6 +303,18 @@ export default function HomePage() {
           </div>
         </div>
       )}
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="dark"
+      />
     </HomePageStyled>
   );
 }
