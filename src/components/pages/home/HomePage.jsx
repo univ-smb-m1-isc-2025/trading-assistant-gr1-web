@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Link, Navigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import styled from "styled-components";
-import { BsPersonCircle, BsSearch, BsBell, BsStar } from "react-icons/bs";
+import { BsPersonCircle, BsSearch, BsBell } from "react-icons/bs";
 
 import Logo from "../../reusable-ui/Logo";
 import { jwtDecode } from "jwt-decode";
@@ -78,7 +78,6 @@ export default function HomePage() {
 
   const handleSearch = async (e) => {
     e.preventDefault();
-    setError(null);
     setResult(null);
     setResultTrading(null);
     setIsLoading(true);
@@ -87,7 +86,7 @@ export default function HomePage() {
       const token = localStorage.getItem("authToken");
 
       if (!token) {
-        setError("Token non trouvé. Veuillez vous connecter.");
+        toast.error("Token non trouvé. Veuillez vous connecter.");
         return;
       }
 
@@ -106,7 +105,7 @@ export default function HomePage() {
         const data = await response.json();
         setResult(data.chart.result[0]);
       } else {
-        setError("Erreur lors de la récupération des données.");
+        toast.error("Erreur lors de la récupération des données.");
         console.log(response);
       }
 
@@ -126,10 +125,10 @@ export default function HomePage() {
         setResultTrading(data2.candles);
       } else {
         console.error("Erreur response2 :", await response2.text());
-        setError("Erreur lors de la récupération des données.");
+        toast.error("Erreur lors de la récupération des données.");
       }
     } catch (err) {
-      setError("Erreur réseau. Veuillez réessayer plus tard.");
+      toast.error("Erreur réseau. Veuillez réessayer plus tard.");
     } finally {
       setIsLoading(false);
     }
