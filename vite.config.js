@@ -9,7 +9,7 @@ export default defineConfig(({ mode }) => {
   return {
     plugins: [react()],
     server: {
-      allowedHosts: ["localhost:8080", "api.trademate.oups.net"],
+      allowedHosts: ["localhost", "www.trademate.oups.net"],
       proxy: {
         "/api": {
           target: apiURL, // Utilisation de la variable d'environnement
