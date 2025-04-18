@@ -110,8 +110,8 @@ export default function LoginForm() {
     <LoginFormStyled action="submit" onSubmit={handleSubmit}>
       <div className="login-form">
         <div className="header">
-          {/* <Logo /> */}
-          <h3>Trademate</h3>
+          <Logo />
+          {/* <h3>Trademate</h3> */}
           <h2>Connexion</h2>
         </div>
         <Input
