@@ -39,8 +39,6 @@ export const ChartComponent = ({
     });
     chart.timeScale().fitContent();
 
-    console.log("Données passées au graphique :", data);
-
     const candlestickSeries = chart.addSeries(CandlestickSeries, {
       upColor: "#26a69a",
       downColor: "#ef5350",
@@ -123,8 +121,6 @@ export default function HomePage() {
   };
 
   const handleSaveAlert = (alertData) => {
-    console.log("Nouvelle alerte :", alertData);
-
     // Affichez une notification de succès
     toast.success("Alerte enregistrée avec succès !");
   };

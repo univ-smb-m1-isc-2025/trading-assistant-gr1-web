@@ -104,8 +104,8 @@ export default function LoginForm() {
     <LoginFormStyled action="submit" onSubmit={handleSubmit}>
       <div className="login-form">
         <div className="header">
-          {/* <Logo /> */}
-          <h3>Trademate</h3>
+          <Logo />
+          {/* <h3>Trademate</h3> */}
           <h2>Connexion</h2>
         </div>
         <Input
@@ -145,10 +145,6 @@ export default function LoginForm() {
         <div className="google-button">
           <GoogleLogin
             onSuccess={(credentialResponse) => {
-              console.log(
-                "Réponse Google pour le login : ",
-                credentialResponse
-              );
               handleGoogleLogin(credentialResponse);
             }}
             onError={() => console.log("Échec de la connexion Google")}
