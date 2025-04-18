@@ -187,7 +187,6 @@ export default function SignUpForm() {
         <div className="google-button">
           <GoogleLogin
             onSuccess={(credentialResponse) => {
-              console.log("Réponse Google : ", credentialResponse);
               handleGoogleSignUp(credentialResponse);
             }}
             onError={() => console.log("Google Sign-Up échoué")}
