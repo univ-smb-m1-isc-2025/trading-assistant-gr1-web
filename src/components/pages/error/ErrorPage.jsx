@@ -29,7 +29,7 @@ const ErrorPageStyled = styled.div`
 
     h1 {
       font-size: 120px;
-      color: #dc3545; /* Rouge pour indiquer une erreur */
+      color: #dc3545;
       margin-bottom: 20px;
     }
 
