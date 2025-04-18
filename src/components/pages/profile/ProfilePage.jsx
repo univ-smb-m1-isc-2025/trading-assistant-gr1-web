@@ -304,10 +304,6 @@ const ProfilePage = () => {
           <ProfileValue>{userProfile.email}</ProfileValue>
         </ProfileSection>
         <ProfileSection>
-          <ProfileLabel>Téléphone</ProfileLabel>
-          <ProfileValue>{userProfile.telephone}</ProfileValue>
-        </ProfileSection>
-        <ProfileSection>
           <ProfileLabel>Date de création</ProfileLabel>
           <ProfileValue>
             {new Date(userProfile.created_at).toLocaleDateString("fr-FR")}
