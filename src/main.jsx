@@ -5,6 +5,9 @@ import App from "./App.jsx";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 
+const GOOGLE_CLIENT_ID =
+  "522893897893-qdk3us0aukm859rljrc4adjt05r75oqb.apps.googleusercontent.com";
+
 // Définition des routes avec le flag v7_startTransition
 const router = createBrowserRouter(
   [
@@ -22,7 +25,7 @@ const router = createBrowserRouter(
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
-    <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
+    <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
       <RouterProvider router={router} />
     </GoogleOAuthProvider>
   </StrictMode>
