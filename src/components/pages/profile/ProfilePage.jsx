@@ -10,10 +10,10 @@ const ProfilePageStyled = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  background-color: #131722; /* Couleur de fond de la HomePage */
-  color: #d1d4dc; /* Couleur du texte */
+  background-color: #131722;
+  color: #d1d4dc;
   font-family: "Poppins", sans-serif;
-  padding-top: 64px; /* Pour compenser un éventuel header fixe */
+  padding-top: 64px;
 `;
 
 const ProfileContainer = styled.div`
@@ -21,10 +21,10 @@ const ProfileContainer = styled.div`
   width: 95%;
   margin: 20px auto;
   padding: 20px;
-  background-color: #1e222d; /* Fond similaire à la HomePage */
-  border-radius: 8px; /* Bordures arrondies */
-  border: 1px solid #2a2e39; /* Bordure similaire à la HomePage */
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Ombre subtile */
+  background-color: #1e222d;
+  border-radius: 8px;
+  border: 1px solid #2a2e39;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 `;
 
 const ProfileHeader = styled.div`
@@ -33,18 +33,18 @@ const ProfileHeader = styled.div`
   align-items: center;
   margin-bottom: 20px;
   padding-bottom: 16px;
-  border-bottom: 1px solid #2a2e39; /* Ligne de séparation */
+  border-bottom: 1px solid #2a2e39;
 
   .buttons {
     display: flex;
-    gap: 12px; /* Espacement entre les boutons */
+    gap: 12px;
   }
 `;
 
 const ProfileTitle = styled.h1`
-  color: #2087f1; /* Couleur principale */
+  color: #2087f1;
   margin: 0;
-  font-size: 24px; /* Taille similaire aux titres de la HomePage */
+  font-size: 24px;
   font-weight: 500;
 `;
 
@@ -53,7 +53,7 @@ const DeleteButton = styled.button`
   color: white;
   border: none;
   padding: 10px 20px;
-  border-radius: 4px; /* Bordures arrondies */
+  border-radius: 4px;
   cursor: pointer;
   font-weight: 500;
   font-size: 14px;
@@ -67,8 +67,8 @@ const DeleteButton = styled.button`
 const ProfileSection = styled.div`
   margin-bottom: 16px;
   padding: 16px;
-  background-color: #2a2e39; /* Fond des sections */
-  border-radius: 4px; /* Bordures arrondies */
+  background-color: #2a2e39;
+  border-radius: 4px;
   border: 1px solid #2a2e39;
 `;
 
@@ -76,13 +76,13 @@ const ProfileLabel = styled.label`
   display: block;
   font-weight: 500;
   margin-bottom: 8px;
-  color: #2087f1; /* Couleur principale */
+  color: #2087f1;
   font-size: 14px;
 `;
 
 const ProfileValue = styled.div`
   padding: 8px;
-  color: #d1d4dc; /* Couleur du texte */
+  color: #d1d4dc;
   font-size: 14px;
 `;
 
@@ -91,7 +91,7 @@ const HomeButton = styled.button`
   color: white;
   border: none;
   padding: 10px 20px;
-  border-radius: 4px; /* Bordures arrondies */
+  border-radius: 4px;
   cursor: pointer;
   font-weight: 500;
   font-size: 14px;
@@ -164,7 +164,6 @@ const ProfilePage = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Récupérer les informations du profil depuis le localStorage
     const token = localStorage.getItem("authToken");
 
     if (!token) {
@@ -231,9 +230,9 @@ const ProfilePage = () => {
 
         if (response.ok) {
           toast.success("Profil supprimé avec succès !");
-          // Supprimer le token du localStorage
+
           localStorage.removeItem("authToken");
-          // Rediriger vers la page de connexion
+
           navigate("/login");
         } else {
           const errorData = await response.json();
