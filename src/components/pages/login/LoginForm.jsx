@@ -48,10 +48,8 @@ export default function LoginForm() {
         const data = await response.json();
         const token = data.token;
 
-        // Enregistrer le token dans le localStorage
         localStorage.setItem("authToken", token);
 
-        // Rediriger l'utilisateur vers la page d'accueil
         setSuccess("Login successful");
         navigate(`/home`);
       } else {
@@ -71,7 +69,7 @@ export default function LoginForm() {
       // Préparez les données pour la connexion
       const loginData = {
         email: decodedToken.email,
-        password: "GoogleDefaultPassword123!", // Assurez-vous que ce mot de passe correspond à celui utilisé lors de l'inscription
+        password: "GoogleDefaultPassword123!",
       };
 
       const response = await fetch(
@@ -88,12 +86,10 @@ export default function LoginForm() {
       if (response.ok) {
         const data = await response.json();
 
-        // Enregistrer le token dans le localStorage
         if (data.token) {
           localStorage.setItem("authToken", data.token);
         }
 
-        // Rediriger l'utilisateur vers la page d'accueil
         setSuccess("Connexion réussie via Google !");
         navigate(`/home`);
       } else {
