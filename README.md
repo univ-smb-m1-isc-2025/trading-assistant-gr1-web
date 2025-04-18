@@ -2,8 +2,6 @@
 
 TradeMate est une application web moderne permettant aux traders de suivre les marchés financiers, d'analyser les actions et de créer des alertes personnalisées.
 
-![Logo TradeMate](/images/logo.png)
-
 ## Fonctionnalités principales
 
 - 📈 **Visualisation de graphiques** en temps réel pour différents symboles boursiers
