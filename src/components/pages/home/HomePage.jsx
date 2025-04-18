@@ -119,12 +119,10 @@ export default function HomePage() {
   };
 
   const handleSaveAlert = (alertData) => {
-    // Affichez une notification de succès
     toast.success("Alerte enregistrée avec succès !");
   };
 
-  const userToken =
-    localStorage.getItem("authToken") || localStorage.getItem("googleToken");
+  const userToken = localStorage.getItem("authToken");
 
   let user = null;
 
