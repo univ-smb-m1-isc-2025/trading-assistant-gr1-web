@@ -51,10 +51,8 @@ export default function SignUpForm() {
         const data = await response.json();
         const token = data.token;
 
-        // Enregistrer le token dans le localStorage
         localStorage.setItem("authToken", token);
 
-        // Rediriger l'utilisateur vers la page d'accueil
         setSuccess("Compte créé avec succès !");
         navigate(`/home`);
       } else {
@@ -76,8 +74,8 @@ export default function SignUpForm() {
         firstname: decodedToken.given_name,
         lastname: decodedToken.family_name,
         email: decodedToken.email,
-        phone: "", // Si vous voulez un champ vide pour le téléphone
-        password: "GoogleDefaultPassword123!", // Vous pouvez générer un mot de passe aléatoire ou utiliser le token
+        phone: "",
+        password: "GoogleDefaultPassword123!",
       };
 
       const response = await fetch(`https://api.trademate.oups.net/api/users`, {
@@ -92,12 +90,10 @@ export default function SignUpForm() {
         // Vérifiez si la réponse contient un corps JSON
         const data = await response.json();
 
-        // Enregistrer le token dans le localStorage
         if (data.token) {
           localStorage.setItem("authToken", data.token);
         }
 
-        // Rediriger l'utilisateur vers la page d'accueil
         setSuccess("Compte créé avec succès via Google !");
         navigate(`/home`);
       } else {
