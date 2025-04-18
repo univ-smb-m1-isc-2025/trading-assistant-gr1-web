@@ -14,10 +14,10 @@ const LogoStyled = styled.div`
   align-items: center;
   justify-content: space-between;
   width: 100%;
-  gap: 10px; /* Espace entre l'image et le texte */
+  gap: 10px;
 
   .logo {
-    width: 60px; /* Ajustez la taille de l'image */
+    width: 60px;
     height: 60px;
   }
 
