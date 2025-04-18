@@ -87,7 +87,7 @@ export default function HomePage() {
       }
 
       const response = await fetch(
-        `http://localhost:8080/api/finance/combined/${symbol}?range=${range}`,
+        `https://api.trademate.oups.net/api/finance/combined/${symbol}?range=${range}`,
         {
           method: "GET",
           headers: {

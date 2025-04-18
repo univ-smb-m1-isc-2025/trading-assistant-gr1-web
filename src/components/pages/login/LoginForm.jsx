@@ -33,13 +33,16 @@ export default function LoginForm() {
     setSuccess(null);
 
     try {
-      const response = await fetch(`http://localhost:8080/api/users/login`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      });
+      const response = await fetch(
+        `https://api.trademate.oups.net/api/users/login`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(formData),
+        }
+      );
 
       if (response.ok) {
         const data = await response.json();
@@ -71,13 +74,16 @@ export default function LoginForm() {
         password: "GoogleDefaultPassword123!", // Assurez-vous que ce mot de passe correspond à celui utilisé lors de l'inscription
       };
 
-      const response = await fetch(`http://localhost:8080/api/users/login`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(loginData),
-      });
+      const response = await fetch(
+        `https://api.trademate.oups.net/api/users/login`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(loginData),
+        }
+      );
 
       if (response.ok) {
         const data = await response.json();

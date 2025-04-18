@@ -29,7 +29,7 @@ export default function AlertPopup({ symbol, onClose, onSave }) {
 
     try {
       const response = await fetch(
-        `http://localhost:8080/api/alerts/${userId}?${queryParams.toString()}`,
+        `https://api.trademate.oups.net/api/alerts/${userId}?${queryParams.toString()}`,
         {
           method: "POST",
           headers: {

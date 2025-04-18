@@ -177,7 +177,7 @@ const ProfilePage = () => {
       setUserProfile(userData);
 
       // Récupérer les alertes actives
-      fetch(`http://localhost:8080/api/alerts/${userData.id}`, {
+      fetch(`https://api.trademate.oups.net/api/alerts/${userData.id}`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -218,13 +218,16 @@ const ProfilePage = () => {
       ) {
         const id = userProfile.id;
 
-        const response = await fetch(`http://localhost:8080/api/users/${id}`, {
-          method: "DELETE",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        const response = await fetch(
+          `https://api.trademate.oups.net/api/users/${id}`,
+          {
+            method: "DELETE",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
 
         if (response.ok) {
           toast.success("Profil supprimé avec succès !");
@@ -250,7 +253,7 @@ const ProfilePage = () => {
 
     try {
       const response = await fetch(
-        `http://localhost:8080/api/alerts/${alertId}`,
+        `https://api.trademate.oups.net/api/alerts/${alertId}`,
         {
           method: "DELETE",
           headers: {
