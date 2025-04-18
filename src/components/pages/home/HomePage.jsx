@@ -91,7 +91,7 @@ export default function HomePage() {
       }
 
       const response = await fetch(
-        `/api/finance/chart/${symbol}?range=${range}`,
+        `/api/finance/combined/${symbol}?range=${range}`,
         {
           method: "GET",
           headers: {
@@ -103,32 +103,15 @@ export default function HomePage() {
 
       if (response.ok) {
         const data = await response.json();
-        setResult(data.chart.result[0]);
+        setResult(data.chart.chart.result[0]); // Données pour le graphique
+        setResultTrading(data.patterns.candles); // Données des patterns
       } else {
         toast.error("Erreur lors de la récupération des données.");
-        console.log(response);
-      }
-
-      const response2 = await fetch(
-        `/api/finance/patterns/${symbol}?range=${range}`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      if (response2.ok) {
-        const data2 = await response2.json();
-        setResultTrading(data2.candles);
-      } else {
-        console.error("Erreur response2 :", await response2.text());
-        toast.error("Erreur lors de la récupération des données.");
+        console.error("Erreur response :", await response.text());
       }
     } catch (err) {
       toast.error("Erreur réseau. Veuillez réessayer plus tard.");
+      console.error("Erreur réseau :", err);
     } finally {
       setIsLoading(false);
     }
