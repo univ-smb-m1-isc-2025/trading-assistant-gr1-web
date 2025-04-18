@@ -71,7 +71,7 @@ export default function LoginForm() {
         password: "GoogleDefaultPassword123!", // Assurez-vous que ce mot de passe correspond à celui utilisé lors de l'inscription
       };
 
-      const response = await fetch(`http://localhost:8080/api/users/login`, {
+      const response = await fetch(`/api/users/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
