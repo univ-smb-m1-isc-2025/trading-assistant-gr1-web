@@ -145,10 +145,6 @@ export default function LoginForm() {
         <div className="google-button">
           <GoogleLogin
             onSuccess={(credentialResponse) => {
-              console.log(
-                "Réponse Google pour le login : ",
-                credentialResponse
-              );
               handleGoogleLogin(credentialResponse);
             }}
             onError={() => console.log("Échec de la connexion Google")}
