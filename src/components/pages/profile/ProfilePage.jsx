@@ -321,6 +321,7 @@ const ProfilePage = () => {
                     {alert.priceLevel &&
                       `| Niveau de prix : $${alert.priceLevel}`}
                     {alert.days && `| Jours : ${alert.days}`}
+                    {alert.pattern && `| Modèle : ${alert.pattern}`}
                   </span>
                 </div>
                 <button
