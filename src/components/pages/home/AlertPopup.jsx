@@ -29,7 +29,7 @@ export default function AlertPopup({ symbol, onClose, onSave }) {
 
     try {
       const response = await fetch(
-        `/api/alerts/${userId}?${queryParams.toString()}`,
+        `http://localhost:8080/api/alerts/${userId}?${queryParams.toString()}`,
         {
           method: "POST",
           headers: {

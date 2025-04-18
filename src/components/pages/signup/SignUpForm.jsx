@@ -39,7 +39,7 @@ export default function SignUpForm() {
     setSuccess(null);
 
     try {
-      const response = await fetch(`/api/users`, {
+      const response = await fetch(`http://localhost:8080/api/users`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -80,7 +80,7 @@ export default function SignUpForm() {
         password: "GoogleDefaultPassword123!", // Vous pouvez générer un mot de passe aléatoire ou utiliser le token
       };
 
-      const response = await fetch(`/api/users`, {
+      const response = await fetch(`http://localhost:8080/api/users`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

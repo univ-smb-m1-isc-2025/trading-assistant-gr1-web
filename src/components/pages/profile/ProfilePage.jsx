@@ -177,7 +177,7 @@ const ProfilePage = () => {
       setUserProfile(userData);
 
       // Récupérer les alertes actives
-      fetch(`/api/alerts/${userData.id}`, {
+      fetch(`http://localhost:8080/api/alerts/${userData.id}`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -218,7 +218,7 @@ const ProfilePage = () => {
       ) {
         const id = userProfile.id;
 
-        const response = await fetch(`/api/users/${id}`, {
+        const response = await fetch(`http://localhost:8080/api/users/${id}`, {
           method: "DELETE",
           headers: {
             "Content-Type": "application/json",
@@ -249,13 +249,16 @@ const ProfilePage = () => {
     const token = localStorage.getItem("authToken");
 
     try {
-      const response = await fetch(`/api/alerts/${alertId}`, {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await fetch(
+        `http://localhost:8080/api/alerts/${alertId}`,
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
       if (response.ok) {
         setAlerts(alerts.filter((alert) => alert.id !== alertId));

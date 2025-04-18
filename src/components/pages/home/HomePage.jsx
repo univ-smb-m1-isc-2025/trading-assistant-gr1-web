@@ -2,16 +2,13 @@ import React, { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
 import { BsPersonCircle, BsSearch, BsBell } from "react-icons/bs";
-
 import Logo from "../../reusable-ui/Logo";
 import { jwtDecode } from "jwt-decode";
-
 import { createChart, ColorType, CandlestickSeries } from "lightweight-charts";
-
 import AlertPopup from "./AlertPopup";
-
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { useNavigate } from "react-router-dom";
 
 export const ChartComponent = ({
   data,
@@ -73,6 +70,7 @@ export default function HomePage() {
   const [isLoading, setIsLoading] = useState(false);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [isAccountPopupOpen, setIsAccountPopupOpen] = useState(false);
+  const navigate = useNavigate();
 
   const handleSearch = async (e) => {
     e.preventDefault();
@@ -89,7 +87,7 @@ export default function HomePage() {
       }
 
       const response = await fetch(
-        `/api/finance/combined/${symbol}?range=${range}`,
+        `http://localhost:8080/api/finance/combined/${symbol}?range=${range}`,
         {
           method: "GET",
           headers: {
@@ -116,7 +114,7 @@ export default function HomePage() {
   };
 
   const handleLogout = () => {
-    window.location.href = "/login";
+    navigate("/login");
     localStorage.removeItem("authToken");
   };
 

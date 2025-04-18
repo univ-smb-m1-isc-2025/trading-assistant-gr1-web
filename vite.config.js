@@ -10,13 +10,13 @@ export default defineConfig(({ mode }) => {
     plugins: [react()],
     server: {
       allowedHosts: ["localhost", "www.trademate.oups.net"],
-      proxy: {
-        "/api": {
-          target: apiURL, // Utilisation de la variable d'environnement
-          changeOrigin: true,
-          rewrite: (path) => path.replace(/^\/api/, ""),
-        },
-      },
+      // proxy: {
+      //   "/api": {
+      //     target: apiURL, // Utilisation de la variable d'environnement
+      //     changeOrigin: true,
+      //     rewrite: (path) => path.replace(/^\/api/, ""),
+      //   },
+      // },
     },
   };
 });
